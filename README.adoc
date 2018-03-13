@@ -1,1 +1,5 @@
-image:https://travis-ci.org/jens18/lgresu.svg?branch=master["Build Status", link="https://travis-ci.org/jens18/lgresu"]
+== LG Resu 10 LV Monitor image:https://travis-ci.org/jens18/lgresu.svg?branch=master["Build Status", link="https://travis-ci.org/jens18/lgresu"] image:https://godoc.org/github.com/jens18/lgresu/lgresustatus?status.svg["GoDoc", link="https://godoc.org/github.com/jens18/lgresu/lgresustatus"]
+
+The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact Lithium Ion battery made by LG Chem.
+
+
