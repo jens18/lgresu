@@ -12,12 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package lgresu provides routines for decoding LG Resu 10 LV
+// Package lgresustatus provides routines for decoding LG Resu 10 LV
 // CANBus messages.
 //
-// NOTE: Not all messages can currently be decoded. Support for
-// warnings and alarms is missing.
-
+// Note:
+//
+// Not all messages can currently be decoded. Support for
+// alarm bits (message id 0x359) and CANBus message id 0x354 is missing.
+//
+// CANBus Message format specifications:
+//
+// 1) Lithiumate BMS CANBus :
+//
+// http://lithiumate.elithion.com/php/controller_can_specs.php
+//
+// 2) LG Resu 10 LV CANBus message format specification:
+//
+// https://www.photovoltaikforum.com/speichersysteme-ongrid-netzparallel-f137/reverse-engineering-bms-von-lg-chem-resu-6-4ex-ned-t108629-s10.html
+//
 package lgresustatus
 
 import (
@@ -25,13 +37,41 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type bitValue struct {
+type Github int
+
+// A single warning/alarm bit mask and definition.
+type BitValue struct {
 	description string
 	value       uint16
 }
 
-// decoding for 16 warning bits is known
-var warningBitValues = []bitValue{
+// Definition of 16 warning bits.
+//
+// Raw CANBus message format:
+//
+// 00000359 8 ww WW aa AA 00 00 00 00
+//
+//  ww0 WRN_ONLY_SUB_RELAY_COMMAND
+//  ww1 BATTERY_HIGH_VOLTAGE
+//  ww2 BATTERY_LOW_VOLTAGE
+//  ww3 BATTERY_HIGH_TEMP
+//  ww4 BATTERY_LOW_TEMP
+//  ww5 UNKNOWN
+//  ww6 UNKNOWN
+//  ww7 BATTERY_HIGH_CURRENT_DISCHARGE
+//  WW0 BATTERY_HIGH_CURRENT_CHARGE
+//  WW1 UNKNOWN
+//  WW2 UNKNOWN
+//  WW3 BMS_INTERNAL
+//  WW4 CELL_IMBALANCE
+//  WW5 ALARM_SUB_PACK2_ERROR
+//  WW6 ALARM_SUB_PACK1_ERROR
+//  WW7 UNKNOWN
+//
+// Note:
+// Bitmasks are applied after converting the littleEndian representation
+// of the first 2 bytes to the bigEndian representation.
+var WarningBitValues = []BitValue{
 	{"WRN_ONLY_SUB_RELAY_COMMAND", 0x0001},
 	{"BATTERY_HIGH_VOLTAGE", 0x0002},
 	{"BATTERY_LOW_VOLTAGE", 0x0004},
@@ -50,13 +90,20 @@ var warningBitValues = []bitValue{
 	{"UNKNOWN_WW7", 0x8000},
 }
 
-// decoding for 16 alarm bits is unknown
-var alarmBitValues = []bitValue{
+// Definition of 16 alarm bits is currently unknown.
+//
+// Raw CANBus message format:
+//
+// 00000359 8 ww WW aa AA 00 00 00 00
+//
+//  aa0-7 UNKNOWN
+//  AA0-7 UNKNOWN
+//
+var AlarmBitValues = []BitValue{
 	{"UNKNOWN_ALARM", 0xffff},
 }
 
-// LGResuBmsStatus contains all of the metrics send by the LG Resu 10 LV
-// that can currently be decoded
+// LGResuBmsStatus contains metrics send by the LG Resu 10 LV.
 type LgResuStatus struct {
 	// State Of Charge
 	Soc uint16 `json:"soc"`
@@ -69,43 +116,15 @@ type LgResuStatus struct {
 	Current float32 `json:"current"`
 	// Battery temperature
 	Temp float32 `json:"temp"`
-	// Battery voltage limit (LG Resu 10 is a 14S battery, indiv. cell voltage allowed is
+	// Battery voltage limit (LG Resu 10 LV is a 14S battery, indiv. cell voltage allowed is
 	// 4.12V -> 14 * 4.12V = 57.7V)
 	MaxVoltage float32 `json:"maxVoltage"`
-	// Maximal battery charge current (LG Resu 10 is a C = 189Ah battery, C/2 is approx. 90A)
+	// Maximal battery charge current (LG Resu 10 LV is a C = 189Ah battery, C/2 is approx. 90A)
 	MaxChargeCurrent float32 `json:"maxChargeCurrent"`
 	// Maximal battery discharge current (LG Resu 10 is a C = 189Ah battery, C/2 is approx. 90A)
-	MaxDischargeCurrent float32 `json:"maxDischargeCurrent"`
-	/*
-	   00000359 8 ww WW aa AA 00 00 00 00
-
-	   16 warning and alarm bits:
-
-	   ww0 WRN_ONLY_SUB_RELAY_COMMAND
-	   ww1 BATTERY_HIGH_VOLTAGE
-	   ww2 BATTERY_LOW_VOLTAGE
-	   ww3 BATTERY_HIGH_TEMP
-	   ww4 BATTERY_LOW_TEMP
-	   ww5 UNKNOWN
-	   ww6 UNKNOWN
-	   ww7 BATTERY_HIGH_CURRENT_DISCHARGE
-	   WW0 BATTERY_HIGH_CURRENT_CHARGE
-	   WW1 UNKNOWN
-	   WW2 UNKNOWN
-	   WW3 BMS_INTERNAL
-	   WW4 CELL_IMBALANCE
-	   WW5 ALARM_SUB_PACK2_ERROR
-	   WW6 ALARM_SUB_PACK1_ERROR
-	   WW7 UNKNOWN
-
-	   Example:
-
-	   LG Resu 10 low voltage situation (42VDC):
-
-	   can0  359   [8]  00 00 00 08 00 00 00 00
-	*/
-	Warnings []string `json:"warnings"`
-	Alarms   []string `json:"alarms"`
+	MaxDischargeCurrent float32  `json:"maxDischargeCurrent"`
+	Warnings            []string `json:"warnings"`
+	Alarms              []string `json:"alarms"`
 }
 
 // lg resu 10 CANBus messages decoder updates LgResuStatus with the latest metric values.
@@ -172,7 +191,7 @@ func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 
 		// decode warnings
 		data := binary.LittleEndian.Uint16(s[0:2])
-		for _, bv := range warningBitValues {
+		for _, bv := range WarningBitValues {
 			if data&bv.value != 0 {
 				lgResu.Warnings = append(lgResu.Warnings, bv.description)
 			}
@@ -180,7 +199,7 @@ func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 
 		// decode alarms
 		data = binary.LittleEndian.Uint16(s[2:4])
-		for _, bv := range alarmBitValues {
+		for _, bv := range AlarmBitValues {
 			if data&bv.value != 0 {
 				lgResu.Alarms = append(lgResu.Alarms, bv.description)
 			}
