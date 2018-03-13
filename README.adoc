@@ -1,0 +1,1 @@
+image:https://travis-ci.org/jens18/lgresu.svg?branch=master["Build Status", link="https://travis-ci.org/jens18/lgresu"]

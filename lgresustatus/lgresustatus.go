@@ -127,7 +127,7 @@ type LgResuStatus struct {
 	Alarms              []string `json:"alarms"`
 }
 
-// lg resu 10 CANBus messages decoder updates LgResuStatus with the latest metric values.
+// DecodeLgResuCanbusMessage decodes the raw byte data s and updates lgResu with new metric values.
 func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 
 	log.Debugf("%-4x % -24X\n", id, s)
