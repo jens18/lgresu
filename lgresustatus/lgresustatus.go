@@ -20,9 +20,9 @@
 // Not all messages can currently be decoded. Support for
 // alarm bits (message id 0x359) and CANBus message id 0x354 is missing.
 //
-// CANBus Message format specifications:
+// CANBus BMS Message format specifications:
 //
-// 1) Lithiumate BMS CANBus :
+// 1) Lithiumate BMS CANBus message format specification:
 //
 // http://lithiumate.elithion.com/php/controller_can_specs.php
 //
@@ -103,7 +103,7 @@ var AlarmBitValues = []BitValue{
 	{"UNKNOWN_ALARM", 0xffff},
 }
 
-// LGResuBmsStatus contains metrics send by the LG Resu 10 LV.
+// LGResuStatus contains metrics send by the LG Resu 10 LV.
 type LgResuStatus struct {
 	// State Of Charge
 	Soc uint16 `json:"soc"`
