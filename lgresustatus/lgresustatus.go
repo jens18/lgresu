@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package lgresustatus provides routines for decoding LG Resu 10 LV
-// CANBus messages.
+// Package lgresustatus provides routines to decode LG Resu 10 LV
+// CANBus messages and generate the 'keep alive' message (typically
+// send from an CANBus enabled device (for example the Schneider Conext
+// Bridge or directly from an inverter) to the LG Resu 10 LV. The decoded
+// result can be converted into a JSON message.
 //
 // Note:
 //
@@ -37,12 +40,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+// Definition of the LG Resu 10 CANBus message id's
+const (
+	INV_KEEP_ALIVE    uint32 = 0x305
+	BMS_LIMITS        uint32 = 0x351
+	BMS_SERIAL_NUM    uint32 = 0x354
+	BMS_SOC_SOH       uint32 = 0x355
+	BMS_VOLT_AMP_TEMP uint32 = 0x356
+	BMS_WARN_ALARM    uint32 = 0x359
+)
+
+// Publish documentation to godoc.
 type Github int
 
 // A single warning/alarm bit mask and definition.
 type BitValue struct {
-	description string
-	value       uint16
+	Description string
+	Value       uint16
 }
 
 // Definition of 16 warning bits.
@@ -127,14 +141,14 @@ type LgResuStatus struct {
 	Alarms              []string `json:"alarms"`
 }
 
-// DecodeLgResuCanbusMessage decodes the raw byte data s and updates lgResu with new metric values.
+// DecodeLgResuCanbusMessage decodes messages send by the LG Resu 10 LV BMS and updates lgResu with new metric values.
 func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 
 	log.Debugf("%-4x % -24X\n", id, s)
 
 	switch id {
-	case 0x356:
-		log.Info("BMS: volt/amp/temp (0x356)\n")
+	case BMS_VOLT_AMP_TEMP:
+		log.Infof("BMS: volt/amp/temp (%#04x)\n", BMS_VOLT_AMP_TEMP)
 
 		// unsigned: voltage is always positive
 		data := binary.LittleEndian.Uint16(s[0:2])
@@ -151,8 +165,8 @@ func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 		lgResu.Temp = float32(data) / 10
 		log.Infof("temperature = %.1f [Celsius]\n\n", float32(data)/10)
 
-	case 0x355:
-		log.Infof("BMS: state of charge/health (0x355):\n")
+	case BMS_SOC_SOH:
+		log.Infof("BMS: state of charge/health (%#04x):\n", BMS_SOC_SOH)
 
 		data := binary.LittleEndian.Uint16(s[0:2])
 		lgResu.Soc = data
@@ -162,8 +176,8 @@ func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 		lgResu.Soh = data
 		log.Infof("soh = %d %%\n\n", lgResu.Soh)
 
-	case 0x351:
-		log.Infof("BMS: configuration parameters (0x351):\n")
+	case BMS_LIMITS:
+		log.Infof("BMS: configuration parameters (%#04x):\n", BMS_LIMITS)
 
 		// unsigned: voltage is always positive
 		data := binary.LittleEndian.Uint16(s[0:2])
@@ -180,30 +194,37 @@ func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 		lgResu.MaxDischargeCurrent = float32(data) / 10
 		log.Infof("max discharge current = %.2f [ADC]\n\n", lgResu.MaxDischargeCurrent)
 
-	case 0x354:
-		log.Infof("BMS: unknown (0x354):\n\n")
+	case BMS_SERIAL_NUM:
+		log.Infof("BMS: serial number (?) (%#04x):\n\n", BMS_SERIAL_NUM)
 
-	case 0x305:
-		log.Infof("INV: keep alive (0x305):\n\n")
+	case INV_KEEP_ALIVE:
+		log.Infof("INV: keep alive (%#04x):\n\n", INV_KEEP_ALIVE)
 
-	case 0x359:
-		log.Infof("BMS: warnings/alarms (0x359):\n\n")
+	case BMS_WARN_ALARM:
+		log.Infof("BMS: warnings/alarms (%#04x):\n\n", BMS_WARN_ALARM)
 
 		// decode warnings
 		data := binary.LittleEndian.Uint16(s[0:2])
 		for _, bv := range WarningBitValues {
-			if data&bv.value != 0 {
-				lgResu.Warnings = append(lgResu.Warnings, bv.description)
+			if data&bv.Value != 0 {
+				lgResu.Warnings = append(lgResu.Warnings, bv.Description)
 			}
 		}
 
 		// decode alarms
 		data = binary.LittleEndian.Uint16(s[2:4])
 		for _, bv := range AlarmBitValues {
-			if data&bv.value != 0 {
-				lgResu.Alarms = append(lgResu.Alarms, bv.description)
+			if data&bv.Value != 0 {
+				lgResu.Alarms = append(lgResu.Alarms, bv.Description)
 			}
 		}
 
 	}
+}
+
+// CreateKeepAlive creates one 'keep alive' message (to be send to the LG Resu 10 LV).
+func (lgResu *LgResuStatus) CreateKeepAliveMessage() (id uint32, s []byte) {
+	id = INV_KEEP_ALIVE
+	s = []byte{0x00, 0x0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
+	return id, s
 }

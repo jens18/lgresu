@@ -22,51 +22,43 @@ import (
 )
 
 // LG Resu 10 LV CANBus test messages
-var canbusTestMessages = []struct {
-	identifier uint32
-	data       [8]byte
-	expect     LgResuStatus
+var CanbusTestMessages = []struct {
+	Identifier uint32
+	Data       [8]byte
+	Expect     LgResuStatus
 }{
 	// volt/amp/temp (LG Resu -> Inverter):
 	{
-		identifier: 0x356,
-		data:       [8]byte{0x4b, 0x15, 0xed, 0xff, 0xba, 0x00, 0x00, 0x00},
-		expect:     LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6},
+		Identifier: BMS_VOLT_AMP_TEMP,
+		Data:       [8]byte{0x4b, 0x15, 0xed, 0xff, 0xba, 0x00, 0x00, 0x00},
+		Expect:     LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6},
 	},
 	// ? (LG Resu -> Inverter): unknown message type (appears to be a constant)
 	{
-		identifier: 0x354,
-		data:       [8]byte{0x04, 0xc0, 0x00, 0x1f, 0x03, 0x00, 0x00, 0x00},
-		expect:     LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6},
+		Identifier: BMS_SERIAL_NUM,
+		Data:       [8]byte{0x04, 0xc0, 0x00, 0x1f, 0x03, 0x00, 0x00, 0x00},
+		Expect:     LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6},
 	},
 	// configuration parameters (LG Resu -> Inverter):
 	{
-		identifier: 0x351,
-		data:       [8]byte{0x41, 0x02, 0x96, 0x03, 0x96, 0x03, 0x00, 0x00},
-		expect: LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6,
+		Identifier: BMS_LIMITS,
+		Data:       [8]byte{0x41, 0x02, 0x96, 0x03, 0x96, 0x03, 0x00, 0x00},
+		Expect: LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6,
 			MaxVoltage: 57.70, MaxChargeCurrent: 91.80, MaxDischargeCurrent: 91.80},
 	},
 	// state of charge/health (LG Resu -> Inverter):
 	{
-		identifier: 0x355,
-		data:       [8]byte{0x4d, 0x00, 0x63, 0x00, 0x00, 0x00, 0x00, 0x00},
-		expect: LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6,
-			MaxVoltage: 57.70, MaxChargeCurrent: 91.80, MaxDischargeCurrent: 91.80,
-			Soc: 77, Soh: 99},
-	},
-	// keep alive ping (Inverter -> LG Resu):
-	{
-		identifier: 0x305,
-		data:       [8]byte{0x00, 0x0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
-		expect: LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6,
+		Identifier: BMS_SOC_SOH,
+		Data:       [8]byte{0x4d, 0x00, 0x63, 0x00, 0x00, 0x00, 0x00, 0x00},
+		Expect: LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6,
 			MaxVoltage: 57.70, MaxChargeCurrent: 91.80, MaxDischargeCurrent: 91.80,
 			Soc: 77, Soh: 99},
 	},
 	// warnings/alarms (LG Resu -> Inverter):
 	{
-		identifier: 0x359,
-		data:       [8]byte{0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00},
-		expect: LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6,
+		Identifier: BMS_WARN_ALARM,
+		Data:       [8]byte{0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00},
+		Expect: LgResuStatus{Voltage: 54.51, Current: -1.9, Temp: 18.6,
 			MaxVoltage: 57.70, MaxChargeCurrent: 91.80, MaxDischargeCurrent: 91.80,
 			Soc: 77, Soh: 99,
 			Warnings: []string{"WRN_ONLY_SUB_RELAY_COMMAND", "BATTERY_HIGH_VOLTAGE", "BATTERY_LOW_VOLTAGE",
@@ -78,22 +70,22 @@ var canbusTestMessages = []struct {
 	},
 }
 
-var jsonExpectMessage string = `{"soc":77,"soh":99,"voltage":54.51,"current":-1.9,"temp":18.6,"maxVoltage":57.7,"maxChargeCurrent":91.8,"maxDischargeCurrent":91.8,"warnings":["WRN_ONLY_SUB_RELAY_COMMAND","BATTERY_HIGH_VOLTAGE","BATTERY_LOW_VOLTAGE","BATTERY_HIGH_TEMP","BATTERY_LOW_TEMP","UNKNOWN_ww5","UNKNOWN_ww6","BATTERY_HIGH_CURRENT_DISCHARGE","BATTERY_HIGH_CURRENT_CHARGE","UNKNOWN_WW1","UNKNOWN_WW2","BMS_INTERNAL","CELL_IMBALANCE","ALARM_SUB_PACK2_ERROR","ALARM_SUB_PACK1_ERROR","UNKNOWN_WW7"],"alarms":["UNKNOWN_ALARM"]}`
+var JsonExpectMessage string = `{"soc":77,"soh":99,"voltage":54.51,"current":-1.9,"temp":18.6,"maxVoltage":57.7,"maxChargeCurrent":91.8,"maxDischargeCurrent":91.8,"warnings":["WRN_ONLY_SUB_RELAY_COMMAND","BATTERY_HIGH_VOLTAGE","BATTERY_LOW_VOLTAGE","BATTERY_HIGH_TEMP","BATTERY_LOW_TEMP","UNKNOWN_ww5","UNKNOWN_ww6","BATTERY_HIGH_CURRENT_DISCHARGE","BATTERY_HIGH_CURRENT_CHARGE","UNKNOWN_WW1","UNKNOWN_WW2","BMS_INTERNAL","CELL_IMBALANCE","ALARM_SUB_PACK2_ERROR","ALARM_SUB_PACK1_ERROR","UNKNOWN_WW7"],"alarms":["UNKNOWN_ALARM"]}`
 
 func init() {
-	// Only log the warning severity or above.
+	// only log warning severity or above.
 	log.SetLevel(log.WarnLevel)
 }
 
-func TestDecodeLgResuCanbusMessageToReturnLgResuStatus(t *testing.T) {
+func TestDecodeLgResuCanbusMessageToUpdateLgResuStatus(t *testing.T) {
 
 	lgResu := &LgResuStatus{}
 
 	// process all test messages
-	for _, tm := range canbusTestMessages {
-		lgResu.DecodeLgResuCanbusMessage(tm.identifier, tm.data[:])
-		if !cmp.Equal(*lgResu, tm.expect) {
-			t.Errorf("lgResu.DecodeLgResuCanbusMessage(%x, %+v) == %+v, expect %+v", tm.identifier, tm.data, *lgResu, tm.expect)
+	for _, tm := range CanbusTestMessages {
+		lgResu.DecodeLgResuCanbusMessage(tm.Identifier, tm.Data[:])
+		if !cmp.Equal(*lgResu, tm.Expect) {
+			t.Errorf("lgResu.DecodeLgResuCanbusMessage(%x, %+v) == %+v, expect %+v", tm.Identifier, tm.Data, *lgResu, tm.Expect)
 		}
 	}
 }
@@ -103,8 +95,8 @@ func TestLgResuStatusConversionToJson(t *testing.T) {
 	lgResu := &LgResuStatus{}
 
 	// process all test messages
-	for _, tm := range canbusTestMessages {
-		lgResu.DecodeLgResuCanbusMessage(tm.identifier, tm.data[:])
+	for _, tm := range CanbusTestMessages {
+		lgResu.DecodeLgResuCanbusMessage(tm.Identifier, tm.Data[:])
 	}
 
 	jsonMessage, err := json.Marshal(*lgResu)
@@ -112,7 +104,18 @@ func TestLgResuStatusConversionToJson(t *testing.T) {
 		log.Fatalf("json.MarshalIndent failed with '%s'\n", err)
 	}
 
-	if string(jsonMessage) != jsonExpectMessage {
-		t.Errorf("LgResuStatus in compact JSON == %s, expect %s\n", string(jsonMessage), jsonExpectMessage)
+	if string(jsonMessage) != JsonExpectMessage {
+		t.Errorf("LgResuStatus in compact JSON == %s, expect %s\n", string(jsonMessage), JsonExpectMessage)
+	}
+}
+
+func TestCreateKeepAliveMessage(t *testing.T) {
+	lgResu := &LgResuStatus{}
+
+	id, data := lgResu.CreateKeepAliveMessage()
+
+	if (id != INV_KEEP_ALIVE) || (len(data) != 8) {
+		t.Errorf("CreateKeepAliveMessage() returned id = %#04x, len(data) = %d, expect id = %#04x, len(data) = 8 \n",
+			id, len(data), INV_KEEP_ALIVE)
 	}
 }
