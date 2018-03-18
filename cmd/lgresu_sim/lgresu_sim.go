@@ -60,7 +60,7 @@ func main() {
 	iface, err := net.InterfaceByName(*i)
 
 	if err != nil {
-		log.Fatalf("lgresu_sim: Could not find network interface %s (%v)", i, err)
+		log.Fatalf("lgresu_sim: Could not find network interface %s (%v)", *i, err)
 	}
 
 	// bind to socket
