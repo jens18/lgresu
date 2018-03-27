@@ -1,0 +1,372 @@
+
+= LG Resu CANBus Monitoring System 
+Jens Kaemmerer <jens@mesgtone.net>
+v1.0, 03-22-2018
+:toc:
+:toclevels: 4
+:sectnums:
+
+== Hardware configuration
+
+=== Hardware components
+
+The 3 main components of the system are:
+
+Raspberry PI 1 model B:
+
+https://en.wikipedia.org/wiki/Raspberry_Pi +
+
+CANBus module :
+
+http://ww1.microchip.com/downloads/en/DeviceDoc/21801e.pdf +
+https://www.nxp.com/docs/en/data-sheet/TJA1050.pdf
+
+DC-DC buck converter:
+
+http://www.ti.com/lit/ds/symlink/lm2596.pdf +
+
+Output voltage is set to 5VDC. Input voltage can be as high as 40VDC. 
+
+image::lg_resu_mon_hardware_1200x800.jpg[]
+
+=== Power 
+
+The system can be powered with either 5VDC (micro USB plug) or
+with 12VDC (DC connector: 2.1mm inner diameter, 5.5mm outer diameter).
+The powersupply should be able to output 5W continuous.
+
+The Raspberry PI 1 power consumption is less than 3W, the monitoring
+software consumes very little CPU time. 
+
+=== Network
+
+The Raspberry PI 1 has a build in 100 MBit Ethernet adapter. A USB Wifi adapter can
+be inserted into a USB port.
+
+=== Canbus
+
+==== Connect CANBus Monitoring System at the end of CANBus cable 
+
+A CANBus network needs a 120 Ohm termination resistor at each end of the network.
+The LG Resu 10 LV already has one of the termination resistors. The second termination resistor
+needs to be enabled with the J1 jumper on the CANBus module (see picture in section: Hardware
+components).
+
+The CANBus cable can be inserted into either of the 2 RJ45 ports.
+
+CANBUS network nodes:
+
+----
+LG Resu Monitoring system (120 Ohm R) <-> LG Resu 10 LV battery (120 Ohm R) 
+----
+
+==== Connect CANBus Monitoring System in between existing CANBus nodes
+
+Addition of the monitoring system at any point between 2 existing CANBus nodes requires that the
+termination resistor on the CANBus module is disabled (no jumper on J1).
+
+Two CANBus cables needs to be inserted into the 2 RJ45 ports.
+
+CANBUS network nodes (example):
+
+----
+Conext Bridge (120 Ohm R) <-> LG Resu Monitoring system <-> LG Resu 10 LV battery (120 Ohm R) 
+----
+
+== Software configuration
+
+=== Software components
+
+SocketCAN CANBus driver:
+
+Raspbian Stretch Lite (Linux kernel 4.9): https://www.raspberrypi.org/ +
+SocketCAN (Linux kernel 4.9): https://www.kernel.org/doc/Documentation/networking/can.txt
+
+CANBus command line utilities:
+
+can-utils (0.0+git20161220-1): https://github.com/linux-can/can-utils
+
+LG Resu Monitoring application:
+
+lgresu (1.0): https://github.com/jens18/lgresu
+
+=== CANBus
+
+==== Automated configuration
+
+Configuration of the CANBus interface on the Raspberry PI has been automated in:
+
+`/etc/rc.local`
+
+----
+# configure CANBus interface                                                                                                        
+/sbin/ip link set can0 type can bitrate 500000 restart-ms 100
+/sbin/ifconfig can0 up
+/sbin/ifconfig can0
+/usr/bin/candump -n 5 can0
+----
+
+==== Manual configuration
+
+The required speed for a CANBus node communicating with the LG Resu 10 LV is 500 kBit/s.
+
+CANBus speed needs to be specificed when configuring the Linux SocketCAN interface:
+
+----
+# /sbin/ip link set can0 type can bitrate 500000 restart-ms 100
+----
+
+The interface can be started with:
+
+----
+# /sbin/ifconfig can0 up
+----
+
+and stopped with:
+
+----
+# /sbin/ifconfig can0 down
+----
+
+Display interface details:
+
+----
+$ ifconfig can0
+ifconfig can0
+can0: flags=193<UP,RUNNING,NOARP>  mtu 16
+        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen 10  (UNSPEC)
+        RX packets 868643  bytes 6949144 (6.6 MiB)
+        RX errors 0  dropped 97  overruns 0  frame 0
+        TX packets 8502  bytes 68016 (66.4 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+----
+
+NOTE: It is normal to see `dropped` packets (in the example: 97). This number will increase
+until a CANBus application (for example: `candump`) connects to the interface for the first time.
+
+=== DHCP
+
+DHCP is enabled.
+
+A _static lease_ can be configured in the router for the MAC address contained in the output of
+the `ifconfig` command:
+
+----
+# ifconfig eth0
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 192.168.29.34  netmask 255.255.255.0  broadcast 192.168.29.255
+        inet6 fe80::10ad:7c00:43c6:c9ef  prefixlen 64  scopeid 0x20<link>
+        ether b8:27:eb:d9:82:b1  txqueuelen 1000  (Ethernet)
+        RX packets 2451  bytes 131185 (128.1 KiB)
+        RX errors 0  dropped 2  overruns 0  frame 0
+        TX packets 432  bytes 74969 (73.2 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+----
+
+The example MAC address is: 
+
+----
+b8:27:eb:d9:82:b1
+----
+
+=== SSH
+
+Logging into the LG Resu Monitor system is possible using any SSH client:
+
+----
+$ ssh -l pi 192.168.X.Y
+----
+
+login: pi +
+password: raspberry
+
+NOTE: `raspberry` is the default `pi` user password for Rasbian and should be changed.
+
+=== sudo
+
+Login as the super user `root` is only possible via `sudo`:
+
+----
+$ sudo bash
+#
+----
+
+`sudo` is enabled for the regular user `pi`.
+
+=== HDMI
+
+HDMI can be permantently disabled to reduce power consumption by removing the # character in front of the
+`tvservice` command in `/etc/rc.local`:
+
+----
+# turn HDMI circuit off
+# /usr/bin/tvservice -o
+----
+
+WARNING: With HDMI disabled, it will not be possible to connect the Raspberry PI to a monitor / keyboard
+in the event a network connection can not be established. 
+
+HDMI can be re-enable with the command:
+
+----
+$ /usr/bin/tvservice -p
+----
+
+=== logrotate
+
+Logfile rotation for the logfiles generated by the LG Resu CANBus Monitoring System has been configured in:
+
+----
+# more /etc/logrotate.d/lgresu
+/opt/lgresu/log/*.log {
+  missingok
+  notifempty
+  compress
+  size 20k
+  daily
+  copytruncate
+}
+----
+
+=== lgresu
+
+The `lgresu` software package has been installed in:
+
+`/opt/lgresu`
+
+The `lgresu' software package contains the following files:
+
+----
+lgresu
+├── bin
+│   └── lg_resu_mon
+├── doc
+│   └── LgResuMon.pdf
+├── log
+│   ├── lg_resu_mon.log
+│   ├── lg_resu_mon.log.1.gz
+│   ├── lg_resu_mon.log.2.gz
+│   ├── lg_resu_mon.log.3.gz
+│   └── lg_resu_mon.log.4.gz
+├── script
+│   ├── can_stats.sh
+│   ├── keep_alive.sh
+│   └── start_interface.sh
+└── start_lg_resu_mon.sh
+----
+
+The startup of the `lg_resu_mon` server program with the script `start_lg_resu_mon.sh` is integrated with the
+Rasbian operating system startup in:
+
+`/etc/rc.local`
+
+----
+# lg_resu_mon
+/opt/lgresu/start_lg_resu_mon.sh
+----
+
+The manual startup command is:
+
+----
+# /opt/lgresu/start_lg_resu_mon.sh
+----
+
+== Monitoring
+
+Display the decoded CANBus message data from the LG Resu 10 LV:
+
+----
+# cd /opt/lgresu/log
+# tail -11 lg_resu_mon.log
+max charge voltage = 57.70 [VDC]
+max charge current = 91.30 [ADC]
+max discharge current = 91.30 [ADC]
+
+soc = 78 %
+soh = 99 %
+
+voltage = 54.71 [VDC]
+current = 3.10 [ADC]
+temperature = 18.9 [Celsius]
+----
+
+Display the raw CANBus message data from from the LG Resu 10 LV:
+
+----
+# /usr/bin/candump -n 5 can0
+  can0  359   [8]  00 00 00 00 00 00 00 00
+  can0  351   [8]  41 02 91 03 91 03 00 00
+  can0  355   [8]  4E 00 63 00 00 00 00 00
+  can0  356   [8]  60 15 1C 00 BD 00 00 00
+  can0  354   [8]  04 C0 00 1F 03 00 00 00
+----
+
+== Troubleshooting
+
+=== Problem: Node disconnected with the CANBus state `BUS-OFF` (and the flag: `NO-CARRIER`).
+
+Example:
+----
+$ bash ./can_stats.sh
+3: can0: <NO-CARRIER,NOARP,UP,ECHO> mtu 16 qdisc pfifo_fast state DOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0
+    can state BUS-OFF restart-ms 0
+      bitrate 500000 sample-point 0.750
+      tq 250 prop-seg 2 phase-seg1 3 phase-seg2 2 sjw 1
+      mcp251x: tseg1 3..16 tseg2 2..8 sjw 1..4 brp 1..64 brp-inc 1
+      clock 4000000
+      re-started bus-errors arbit-lost error-warn error-pass bus-off
+      0          0          0          2          2          1         numtxqueues 1 gso_max_size 65536 gso_max_segs 65535
+    RX: bytes  packets  errors  dropped overrun mcast  
+    355424     44451    0       530     0       0      
+    TX: bytes  packets  errors  dropped carrier collsns
+    3440       430      0       0       0       0      
+----
+
+In this condition, `top` output typically shows that the interrupt handler is consuming a high CPU percentage:
+
+----
+$ top
+top - 07:39:29 up  9:29,  1 user,  load average: 2.98, 2.78, 2.58
+Tasks:  89 total,   2 running,  87 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us, 96.3 sy,  0.0 ni,  3.7 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem :   444452 total,   221044 free,    22848 used,   200560 buff/cache
+KiB Swap:   102396 total,   102396 free,        0 used.   369788 avail Mem
+
+  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND                                   
+  562 root     -51   0       0      0      0 R 99.9  0.0 396:21.67 irq/185-mcp251x                           
+ 1208 pi        20   0    8096   3204   2720 R  1.5  0.7   0:00.20 top                                       
+ 1128 root      20   0       0      0      0 S  0.2  0.0   0:00.29 kworker/0:2                               
+ 1160 pi        20   0   11636   3900   3136 S  0.2  0.9   0:00.25 sshd
+----
+
+Solution:
+
+Restart the interface with the following commands:
+
+----
+# ip link set can0 down
+# ip link set can0 up
+----
+
+Verify that the interface is now in the state `ERROR-ACTIVE` (normal operation).
+
+Example:
+
+----
+# bash ../script/can_stats.sh 
+3: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 10
+    link/can  promiscuity 0 
+    can state ERROR-ACTIVE restart-ms 100 
+	  bitrate 500000 sample-point 0.750 
+	  tq 250 prop-seg 2 phase-seg1 3 phase-seg2 2 sjw 1
+	  mcp251x: tseg1 3..16 tseg2 2..8 sjw 1..4 brp 1..64 brp-inc 1
+	  clock 4000000
+	  re-started bus-errors arbit-lost error-warn error-pass bus-off
+	  0          0          0          0          0          0         numtxqueues 1 gso_max_size 65536 gso_max_segs 65535 
+    RX: bytes  packets  errors  dropped overrun mcast   
+    45408      5676     0       0       0       0       
+    TX: bytes  packets  errors  dropped carrier collsns 
+    440        55       0       0       0       0
+----
+

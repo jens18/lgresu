@@ -1,0 +1,237 @@
+
+== Raspberry PI 1 Setup Instructions
+
+=== Install Raspbian
+
+Download Raspbian Stretch Lite (server only):
+
+https://www.raspberrypi.org/downloads/raspbian/
+
+Uncompress Raspbian Stretch Lite
+
+----
+# unzip 2018-03-13-raspbian-stretch-lite.zip
+# ls -l 2018-03-13*
+-rw-r--r-- 1 root root 1858076672 Mar 13 22:53 2018-03-13-raspbian-stretch-lite.img
+-rw-rw-r-- 1 jens jens  365765304 Mar 14 10:56 2018-03-13-raspbian-stretch-lite.zip
+----
+
+Copy Raspbian Stretch Lite to SD card
+
+----
+# dd bs=4M if=2018-03-13-raspbian-stretch-lite.img of=/dev/sdb conv=fsync status=progress
+1853882368 bytes (1.9 GB, 1.7 GiB) copied, 241.004 s, 7.7 MB/s 
+443+0 records in
+443+0 records out
+1858076672 bytes (1.9 GB, 1.7 GiB) copied, 301.864 s, 6.2 MB/s
+----
+
+=== Configure Raspbian
+
+Connect Raspberrery PI to HDMI monitor and keyboard and boot.
+
+l: pi +
+p: raspberry
+
+Start `raspi-config`:
+
+----
+# raspi-config
+----
+
+4 Localization -> Timezone: Pacific New (PDT/PST) +
+5 Interfacing Options -> enable: SSH, SPI (required for CANBus module) +
+6 Overclock -> Modest (800 Mhz ARM) +
+
+=== Upgrade Raspbian
+
+----
+# apt-get update // update package repository
+# apt-get upgrade
+----
+
+=== Configure Powersaving options
+
+Disable HDMI circuit
+
+Edit `/etc/rc.local`:
+
+----
+/usr/bin/tvservice -o
+----
+
+NOTE: HDMI can be re-enable with the command:
+
+----
+$ /usr/bin/tvservice -p
+----
+
+=== Install additional packages
+
+----
+# apt-get install emacs-nox
+# apt-get install can-utils
+----
+
+=== Install golang
+
+https://golang.org/dl/
+
+----
+# cd /usr/local
+# tar -xzf /home/pi/go1.10.linux-armv6l.tar.gz
+----
+
+Edit `/etc/profile`:
+
+----
+# golang 1.10
+export PATH=$PATH:/usr/local/go/bin
+----
+
+=== Test golang installation
+
+----
+$ mkdir ~/Projects/go/src/hello
+$ cat <<EOF > hello1.go
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Printf("hello, world\n")
+}
+EOF
+$ go build
+$ ./hello
+hello, world
+----
+
+=== Bluetooth
+
+Disable Bluetooth services:
+
+----
+sudo systemctl disable hciuart.service
+sudo systemctl disable bluealsa.service
+sudo systemctl disable bluetooth.service
+----
+
+https://scribles.net/disabling-bluetooth-on-raspberry-pi/
+
+=== Wifi
+
+----
+$ /sbin/iw dev
+phy#0
+	Interface wlan0
+		ifindex 3
+		wdev 0x1
+		addr 00:13:ef:80:09:77
+		type managed
+		txpower 12.00 dBm
+		
+$ sudo ip link show wlan0
+4: wlan0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc mq state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:13:ef:80:09:77 brd ff:ff:ff:ff:ff:ff
+
+$ iwconfig 
+lo        no wireless extensions.
+
+eth0      no wireless extensions.
+
+can0      no wireless extensions.
+
+wlan0     IEEE 802.11bgn  ESSID:"mtv"  Nickname:"<WIFI@REALTEK>"
+          Mode:Managed  Frequency:2.437 GHz  Access Point: 2C:56:DC:84:D3:AA   
+          Bit Rate:72.2 Mb/s   Sensitivity:0/0  
+          Retry:off   RTS thr:off   Fragment thr:off
+          Encryption key:****-****-****-****-****-****-****-****   Security mode:open
+          Power Management:off
+          Link Quality=99/100  Signal level=60/100  Noise level=0/100
+          Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
+          Tx excessive retries:0  Invalid misc:0   Missed beacon:0
+
+$ ip route show
+sudo ip route del default 
+sudo ip route add default via 192.168.29.1 dev wlan0
+----
+
+Reference:
+
+https://linuxcommando.blogspot.com/2013/10/how-to-connect-to-wpawpa2-wifi-network.html
+
+=== CANBus test environment:
+
+Setup the virtual CANBus interface:
+
+----
+# modprobe vcan
+# ip link add dev vcan0 type vcan
+# ip link set up vcan0
+# ifconfig vcan0
+vcan0     Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  
+          UP RUNNING NOARP  MTU:16  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1 
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+----
+
+Install `can-utils` package (https://github.com/linux-can/can-utils.git):
+
+----
+# sudo apt-get install can-utils
+----
+
+Start `candump` and `cansend` in 2 different terminals:
+
+----
+terminal 1 $ candump vcan0
+
+  vcan0  001   [8]  11 22 33 44 55 66 77 88
+  vcan0  001   [8]  11 22 33 44 55 66 77 89
+
+terminal 2 $ cansend vcan0 001#1122334455667788
+terminal 2 $ cansend vcan0 001#1122334455667789
+----
+
+=== Automate configuration of CANBus interface
+
+`/etc/network/interfaces`
+
+----
+auto can0
+iface can0 can static 
+  bitrate 500000
+----
+
+----
+# dmesg | fgrep -i mcp
+[   18.240774] mcp251x spi0.0 can0: MCP2515 successfully initialized.
+----
+
+----
+# dmesg | fgrep -i can
+[   18.183761] CAN device driver interface
+[   18.240774] mcp251x spi0.0 can0: MCP2515 successfully initialized.
+[  503.121288] IPv6: ADDRCONF(NETDEV_CHANGE): can0: link becomes ready
+[  729.404467] can: controller area network core (rev 20120528 abi 9)
+[  729.428158] can: raw protocol (rev 20120528)
+----
+
+Reference:
+
+1) CANBus wiring instructions:
+
+https://www.orionbms.com/general/diagnosing-canbus-communication-problems/
+
+http://tekeye.uk/automotive/can-bus-cable-wiring
+
+http://copperhilltech.com/content/CAN-Bus.pdf
+
+http://copperhilltech.com/content/CAN-Troubleshooting-Guide.pdf
+
+2) Testing of the CANBus physical layer:
+
+http://copperhilltech.com/content/CIA_article.pdf
