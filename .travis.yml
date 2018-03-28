@@ -5,6 +5,7 @@ go:
 
 before_install:
    - go get github.com/sirupsen/logrus
+   - go get github.com/brutella/can
 
 script:
    - go test -v ./...
