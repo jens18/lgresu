@@ -7,9 +7,6 @@
 cmd/lgresu_mon/lgresu_mon
 cmd/lgresu_sim/lgresu_sim
 
-# PDF files
-*.pdf
-
 dist/
 
 # Test binary, build with `go test -c`
