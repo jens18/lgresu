@@ -6,15 +6,19 @@ endif
 all: install
 
 cmd/lgresu_mon/lgresu_mon: cmd/lgresu_mon/lgresu_mon.go
-	go build $<
+	( cd $(dir $@); go build $(notdir $<) )
 
 doc: doc/LGResuMon.pdf doc/RPISetup.pdf
 
 doc/%.pdf: doc/%.adoc
 	asciidoctor-pdf $<
 
+
+.PHONY: clean
 clean:
-	rm  doc/*.pdf cmd/lgresu_mon/lgresu_mon
+	-rm doc/*.pdf 
+	-rm cmd/lgresu_mon/lgresu_mon
+	-rm -rf dist/*
 
 install: doc/LGResuMon.pdf cmd/lgresu_mon/lgresu_mon
 	install -d $(PREFIX)/lgresu/bin/
