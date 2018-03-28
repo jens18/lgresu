@@ -6,6 +6,7 @@ go:
 before_install:
    - go get github.com/sirupsen/logrus
    - go get github.com/brutella/can
+   - go get github.com/google/go-cmp/cmp
 
 script:
    - go test -v ./...
