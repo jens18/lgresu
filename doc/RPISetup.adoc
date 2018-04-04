@@ -7,7 +7,7 @@ Download Raspbian Stretch Lite (server only):
 
 https://www.raspberrypi.org/downloads/raspbian/
 
-Uncompress Raspbian Stretch Lite
+Uncompress Raspbian Stretch Lite:
 
 ----
 # unzip 2018-03-13-raspbian-stretch-lite.zip
@@ -16,7 +16,14 @@ Uncompress Raspbian Stretch Lite
 -rw-rw-r-- 1 jens jens  365765304 Mar 14 10:56 2018-03-13-raspbian-stretch-lite.zip
 ----
 
-Copy Raspbian Stretch Lite to SD card
+Unmount all existing partition of the SD card:
+
+----
+# umount /dev/sdb1
+# umount /dev/sdb2
+----
+
+Copy Raspbian Stretch Lite to SD card:
 
 ----
 # dd bs=4M if=2018-03-13-raspbian-stretch-lite.img of=/dev/sdb conv=fsync status=progress
@@ -26,9 +33,17 @@ Copy Raspbian Stretch Lite to SD card
 1858076672 bytes (1.9 GB, 1.7 GiB) copied, 301.864 s, 6.2 MB/s
 ----
 
-=== Configure Raspbian
+Remove and re-insert the SD card to trigger automounter.
 
-Connect Raspberrery PI to HDMI monitor and keyboard and boot.
+Place empty `ssh` file in root filesystem to automatically launch SSH server on first
+boot without having to connect an HDMI monitor and USB keyboard in order to enable SSH:
+
+----
+# cd /media/jens/boot
+# touch ssh
+----
+
+=== Configure Raspbian
 
 l: pi +
 p: raspberry
@@ -48,6 +63,32 @@ Start `raspi-config`:
 ----
 # apt-get update // update package repository
 # apt-get upgrade
+----
+
+=== Boot configuration
+
+Edit `/boot/config.txt` and reboot:
+
+----
+dtparam=spi=on
+dtoverlay=mcp2515-can0,oscillator=8000000,interrupt=25
+dtoverlay=spi-bcm2835-overlay
+----
+
+After reboot - test presence of SPI and MCP2515:
+
+----
+# dmesg | fgrep -i mcp
+[   18.240774] mcp251x spi0.0 can0: MCP2515 successfully initialized.
+----
+
+----
+# dmesg | fgrep -i can
+[   18.183761] CAN device driver interface
+[   18.240774] mcp251x spi0.0 can0: MCP2515 successfully initialized.
+[  503.121288] IPv6: ADDRCONF(NETDEV_CHANGE): can0: link becomes ready
+[  729.404467] can: controller area network core (rev 20120528 abi 9)
+[  729.428158] can: raw protocol (rev 20120528)
 ----
 
 === Configure Powersaving options
@@ -73,6 +114,36 @@ $ /usr/bin/tvservice -p
 # apt-get install can-utils
 ----
 
+=== Postfix email relay server
+
+https://www.linode.com/docs/email/postfix/configure-postfix-to-send-mail-using-gmail-and-google-apps-on-debian-or-ubuntu/
+
+Additional changes:
+
+Define the local subnet to allow emails arriving from the Combox - the default setting of 127.0.0.0/8
+only allows emails from the server that run postfix.
+
+Edit `/etc/postfix/main.cf` to include:
+
+----
+myhostname = lgresumon.mesgtone.lan
+...
+mynetworks = 127.0.0.0/8 192.168.29.0/24 [::ffff:127.0.0.0]/104 [::1]/128
+...
+# Enable SASL authentication
+smtp_sasl_auth_enable = yes
+# Disallow methods that allow anonymous authentication
+smtp_sasl_security_options = noanonymous
+# Location of sasl_passwd
+smtp_sasl_password_maps = hash:/etc/postfix/sasl/sasl_passwd
+# Enable STARTTLS encryption
+smtp_tls_security_level = encrypt
+# Location of CA certificates
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+----
+
+== Optional
+
 === Install golang
 
 https://golang.org/dl/
@@ -89,7 +160,7 @@ Edit `/etc/profile`:
 export PATH=$PATH:/usr/local/go/bin
 ----
 
-=== Test golang installation
+Test golang installation:
 
 ----
 $ mkdir ~/Projects/go/src/hello
@@ -107,7 +178,7 @@ $ ./hello
 hello, world
 ----
 
-=== Bluetooth
+=== Disable Bluetooth
 
 Disable Bluetooth services:
 
@@ -206,19 +277,6 @@ iface can0 can static
   bitrate 500000
 ----
 
-----
-# dmesg | fgrep -i mcp
-[   18.240774] mcp251x spi0.0 can0: MCP2515 successfully initialized.
-----
-
-----
-# dmesg | fgrep -i can
-[   18.183761] CAN device driver interface
-[   18.240774] mcp251x spi0.0 can0: MCP2515 successfully initialized.
-[  503.121288] IPv6: ADDRCONF(NETDEV_CHANGE): can0: link becomes ready
-[  729.404467] can: controller area network core (rev 20120528 abi 9)
-[  729.428158] can: raw protocol (rev 20120528)
-----
 
 Reference:
 
