@@ -6,7 +6,7 @@ endif
 all: install
 
 cmd/lgresu_mon/lgresu_mon: cmd/lgresu_mon/lgresu_mon.go
-	( cd $(dir $@); go build $(notdir $<) )
+	( go get ./...; cd $(dir $@); go build $(notdir $<) )
 
 doc: doc/LGResuMon.pdf doc/RPISetup.pdf
 
@@ -16,7 +16,6 @@ doc/%.pdf: doc/%.adoc
 
 .PHONY: clean
 clean:
-	-rm doc/*.pdf 
 	-rm cmd/lgresu_mon/lgresu_mon
 	-rm -rf dist/*
 
