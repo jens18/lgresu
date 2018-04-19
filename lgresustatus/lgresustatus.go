@@ -148,60 +148,60 @@ func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 
 	switch id {
 	case BMS_VOLT_AMP_TEMP:
-		log.Infof("BMS: volt/amp/temp (%#04x)\n", BMS_VOLT_AMP_TEMP)
+		log.Debugf("BMS: volt/amp/temp (%#04x)\n", BMS_VOLT_AMP_TEMP)
 
 		// unsigned: voltage is always positive
 		data := binary.LittleEndian.Uint16(s[0:2])
 		lgResu.Voltage = float32(data) / 100
-		log.Infof("voltage = %.2f [VDC]\n", lgResu.Voltage)
+		log.Debugf("voltage = %.2f [VDC]\n", lgResu.Voltage)
 
 		// signed: - battery is discharged, + battery is charged
 		data = binary.LittleEndian.Uint16(s[2:4])
 		lgResu.Current = float32(int16(data)) / 10
-		log.Infof("current = %.2f [ADC]\n", lgResu.Current)
+		log.Debugf("current = %.2f [ADC]\n", lgResu.Current)
 
 		// signed: temperature in Celsius
 		data = binary.LittleEndian.Uint16(s[4:6])
 		lgResu.Temp = float32(data) / 10
-		log.Infof("temperature = %.1f [Celsius]\n\n", float32(data)/10)
+		log.Debugf("temperature = %.1f [Celsius]\n\n", float32(data)/10)
 
 	case BMS_SOC_SOH:
-		log.Infof("BMS: state of charge/health (%#04x):\n", BMS_SOC_SOH)
+		log.Debugf("BMS: state of charge/health (%#04x):\n", BMS_SOC_SOH)
 
 		data := binary.LittleEndian.Uint16(s[0:2])
 		lgResu.Soc = data
-		log.Infof("soc = %d %%\n", lgResu.Soc)
+		log.Debugf("soc = %d %%\n", lgResu.Soc)
 
 		data = binary.LittleEndian.Uint16(s[2:4])
 		lgResu.Soh = data
-		log.Infof("soh = %d %%\n\n", lgResu.Soh)
+		log.Debugf("soh = %d %%\n\n", lgResu.Soh)
 
 	case BMS_LIMITS:
-		log.Infof("BMS: configuration parameters (%#04x):\n", BMS_LIMITS)
+		log.Debugf("BMS: configuration parameters (%#04x):\n", BMS_LIMITS)
 
 		// unsigned: voltage is always positive
 		data := binary.LittleEndian.Uint16(s[0:2])
 		lgResu.MaxVoltage = float32(data) / 10
-		log.Infof("max voltage = %.2f [VDC]\n", lgResu.MaxVoltage)
+		log.Debugf("max voltage = %.2f [VDC]\n", lgResu.MaxVoltage)
 
 		// unsigned: ADC
 		data = binary.LittleEndian.Uint16(s[2:4])
 		lgResu.MaxChargeCurrent = float32(data) / 10
-		log.Infof("max charge current = %.2f [ADC]\n", lgResu.MaxChargeCurrent)
+		log.Debugf("max charge current = %.2f [ADC]\n", lgResu.MaxChargeCurrent)
 
 		// unsigned: ADC
 		data = binary.LittleEndian.Uint16(s[4:6])
 		lgResu.MaxDischargeCurrent = float32(data) / 10
-		log.Infof("max discharge current = %.2f [ADC]\n\n", lgResu.MaxDischargeCurrent)
+		log.Debugf("max discharge current = %.2f [ADC]\n\n", lgResu.MaxDischargeCurrent)
 
 	case BMS_SERIAL_NUM:
-		log.Infof("BMS: serial number (?) (%#04x):\n\n", BMS_SERIAL_NUM)
+		log.Debugf("BMS: serial number (?) (%#04x):\n\n", BMS_SERIAL_NUM)
 
 	case INV_KEEP_ALIVE:
-		log.Infof("INV: keep alive (%#04x):\n\n", INV_KEEP_ALIVE)
+		log.Debugf("INV: keep alive (%#04x):\n\n", INV_KEEP_ALIVE)
 
 	case BMS_WARN_ALARM:
-		log.Infof("BMS: warnings/alarms (%#04x):\n\n", BMS_WARN_ALARM)
+		log.Debugf("BMS: warnings/alarms (%#04x):\n\n", BMS_WARN_ALARM)
 
 		// decode warnings
 		data := binary.LittleEndian.Uint16(s[0:2])
