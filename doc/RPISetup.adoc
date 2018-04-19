@@ -223,6 +223,18 @@ wlan0     IEEE 802.11bgn  ESSID:"mtv"  Nickname:"<WIFI@REALTEK>"
           Rx invalid nwid:0  Rx invalid crypt:0  Rx invalid frag:0
           Tx excessive retries:0  Invalid misc:0   Missed beacon:0
 
+# wpa_passphrase mtv > /etc/wpa_supplicant.conf
+# cat /etc/wpa_supplicant.conf
+# reading passphrase from stdin
+network={
+	ssid="mtv"
+	psk=fcdf6d5013cd55eeb8376b0f4ae664efc584737432b33814e888d5194aa3adc8
+	}
+		
+
+# wpa_supplicant -B -D none -i wlan0 -c /etc/wpa_supplicant.conf
+Successfully initialized wpa_supplicant
+
 $ ip route show
 sudo ip route del default 
 sudo ip route add default via 192.168.29.1 dev wlan0
@@ -265,6 +277,13 @@ terminal 1 $ candump vcan0
 
 terminal 2 $ cansend vcan0 001#1122334455667788
 terminal 2 $ cansend vcan0 001#1122334455667789
+----
+
+Filter the 'keep alive' message with `candump`:
+
+----
+$ candump vcan0,305:1ff
+  vcan0  305   [8]  00 00 00 00 00 00 00 00
 ----
 
 === Automate configuration of CANBus interface
