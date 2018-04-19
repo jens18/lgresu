@@ -19,14 +19,11 @@ const (
 	KeepAliveInterval time.Duration = 20
 )
 
-// default value is the virtual CANBus interface: vcan0
-var i = flag.String("if", "vcan0", "network interface name")
-
 // decodeCanFrame returns a function that implements the can.Handler interface.
 func decodeCanFrame(chRs chan<- rs.LgResuStatus, sig <-chan bool) func(can.Frame) {
 	// https://www.calhoun.io/5-useful-ways-to-use-closures-in-go/
 
-	// lgResu hold the current state of metrics from the LG Resu 10.
+	// lgResu holds the current state of metrics from the LG Resu 10.
 	// Every update message received will update only parts of LgResuStatus (ie. Soc + Soh but not Voltage).
 	// Only the implementation  of the can.Handler interface has access to
 	// lgResu.
@@ -49,12 +46,11 @@ func decodeCanFrame(chRs chan<- rs.LgResuStatus, sig <-chan bool) func(can.Frame
 	}
 }
 
-// sendKeepAlive send keep-alive messages in 20 second intervals until it receives termination message.
+// sendKeepAlive send keep-alive messages in KeepAliveInterval second intervals until it receives termination message.
 func sendKeepAlive(c <-chan bool, bus *can.Bus) {
 	lgResu := &rs.LgResuStatus{}
 	frm := can.Frame{}
 
-	// send keep-alive message every 20 sec
 	for {
 		select {
 		case <-c:
@@ -97,14 +93,32 @@ func Index(chRs <-chan rs.LgResuStatus, sig chan<- bool) func(http.ResponseWrite
 func main() {
 	log.Infof("lgresu_mon:\n")
 
-	// only log warning severity or above.
-	log.SetLevel(log.InfoLevel)
+	// default value is the virtual CANBus interface: vcan0
+	i := flag.String("if", "vcan0", "network interface name")
+	logLevel := flag.String("d", "info", "log level: debug, info, warn, error")
 
 	flag.Parse()
+
 	if len(*i) == 0 {
 		flag.Usage()
 		os.Exit(1)
 	}
+
+	switch *logLevel {
+	case "info":
+		log.SetLevel(log.InfoLevel)
+	case "debug":
+		log.SetLevel(log.DebugLevel)
+	case "warn":
+		log.SetLevel(log.WarnLevel)
+	case "error":
+		log.SetLevel(log.ErrorLevel)
+	default:
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	// only log warning severity or above.
 
 	iface, err := net.InterfaceByName(*i)
 
@@ -121,16 +135,17 @@ func main() {
 
 	bus := can.NewBus(conn)
 
+	// channel to receive os.Kill/SIGKILL(9) and os.Interrupt/SIGTERM(15) notifications
 	c := make(chan os.Signal)
 	// channel to terminate sendKeepAlive goroutine
 	t := make(chan bool)
+	// channel
 	chRs := make(chan rs.LgResuStatus)
 	sig := make(chan bool)
 
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, os.Kill)
 
-	// react to os.Kill/SIGKILL(9) and os.Interrupt/SIGTERM(15)
 	go func() {
 		select {
 		case <-c:
