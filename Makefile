@@ -3,6 +3,9 @@ ifeq ($(PREFIX),)
     PREFIX := dist
 endif
 
+ARCH := $(shell arch)
+VERSION := 1.1
+
 all: install
 
 cmd/lgresu_mon/lgresu_mon: cmd/lgresu_mon/lgresu_mon.go
@@ -30,6 +33,6 @@ install: doc/LGResuMon.pdf cmd/lgresu_mon/lgresu_mon
 	install -m 755 script/keep_alive.sh $(PREFIX)/lgresu/script
 	install -m 755 script/start_interface.sh $(PREFIX)/lgresu/script
 	install -m 755 script/start_lg_resu_mon.sh $(PREFIX)/lgresu
-	tar -c -v -z -f dist/lgresu.tar.gz -C dist  lgresu
+	tar -c -v -z -f dist/lgresu-$(VERSION)-linux-$(ARCH).tar.gz -C dist  lgresu
 
 
