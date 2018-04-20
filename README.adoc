@@ -2,7 +2,7 @@
 
 The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact Lithium Ion battery made by LG Chem.
 
-lgresu provides a server and web based monitoring interface to visualize the main LG Resu 10 LV BMS metrics such as:
+The lgresu project provides a server and web based monitoring interface to visualize the main LG Resu 10 LV BMS metrics such as:
 
 * State Of Charge (SOC)
 * State Of Health (SOH)
@@ -10,9 +10,19 @@ lgresu provides a server and web based monitoring interface to visualize the mai
 * Current
 * Temperature. 
 
-lgresu runs on a Raspbeerry PI equipped with a CANBus module:
+image::doc/lg_resu_dashboard_phone.png
+
+lgresu software runs on a Raspbeerry PI equipped with a CANBus module connected to a LG Resu 10 battery:
 
 image::doc/lg_resu_mon_hardware_1200x800.jpg[]
+
+Documentation: 
+
+lg_resu_mon server: doc/LGResuMon.adoc
+lg_resu_dashboard web application: lg_resu_dashboard_phone.png
+lgresustatus API: https://godoc.org/github.com/jens18/lgresu/lgresustatus
+
+
 
 
 
