@@ -10,3 +10,9 @@ lgresu provides a server and web based monitoring interface to visualize the mai
 * Current
 * Temperature. 
 
+lgresu runs on a Raspbeerry PI equipped with a CANBus module:
+
+image::doc/lg_resu_mon_hardware_1200x800.jpg[]
+
+
+
