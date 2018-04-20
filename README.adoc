@@ -2,7 +2,7 @@
 
 == Introduction
 
-The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact residential Lithium Ion battery made by LG Chem.
+The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact, residential Lithium Ion battery made by LG Chem.
 
 == Monitoring
 
