@@ -2,3 +2,11 @@
 
 The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact Lithium Ion battery made by LG Chem.
 
+lgresu provides a server and web based monitoring interface to visualize the main LG Resu 10 LV BMS metrics such as:
+
+* State Of Charge (SOC)
+* State Of Health (SOH)
+* Voltage
+* Current
+* Temperature. 
+
