@@ -18,9 +18,10 @@ image::doc/lg_resu_mon_hardware_1200x800.jpg[]
 
 Documentation: 
 
-lg_resu_mon server: doc/LGResuMon.adoc
-lg_resu_dashboard web application: lg_resu_dashboard_phone.png
-lgresustatus API: https://godoc.org/github.com/jens18/lgresu/lgresustatus
+lg_resu_mon server: https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc +
+lg_resu_dashboard web application: https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc +
+lgresustatus API: https://godoc.org/github.com/jens18/lgresu/lgresustatus 
+
 
 
 
