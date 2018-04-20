@@ -27,7 +27,7 @@ lg_resu_mon server: https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.a
 lg_resu_dashboard web application: https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc +
 lgresustatus API: https://godoc.org/github.com/jens18/lgresu/lgresustatus +
 Raspberry PI configuration: https://github.com/jens18/lgresu/blob/master/doc/RPISetup.adoc +
-Solar Hybrid Inverter System notes: https://jenska.gitlab.io/jknotes/posts/hybrid_grid/
+Solar/Grid Hybrid System notes: https://jenska.gitlab.io/jknotes/posts/hybrid_grid/
 
 
 
