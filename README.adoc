@@ -25,6 +25,9 @@ The lgresu server also supplies the LG REsu 10 LV battery with a 'keep-alive' CA
 
 lgresu software requires a Raspberry PI equipped with a CANBus module connected to a LG Resu 10 battery.
 
+This solution can coexist with other products for integration of the LG Resu 10 battery with an inverter 
+(Schneider Conext Bridge, Victron ESS, SMA Sunny Island, ...).
+
 == Documentation
 
 lg_resu_mon server: https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc +
