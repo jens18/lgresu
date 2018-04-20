@@ -1,12 +1,12 @@
-== LG Resu 10 LV Monitor image:https://travis-ci.org/jens18/lgresu.svg?branch=master["Build Status", link="https://travis-ci.org/jens18/lgresu"] image:https://godoc.org/github.com/jens18/lgresu/lgresustatus?status.svg["GoDoc", link="https://godoc.org/github.com/jens18/lgresu/lgresustatus"]
+= LG Resu 10 LV Monitor image:https://travis-ci.org/jens18/lgresu.svg?branch=master["Build Status", link="https://travis-ci.org/jens18/lgresu"] image:https://godoc.org/github.com/jens18/lgresu/lgresustatus?status.svg["GoDoc", link="https://godoc.org/github.com/jens18/lgresu/lgresustatus"]
 
 :toc:
 
-=== Introduction
+== Introduction
 
 The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact Lithium Ion battery made by LG Chem.
 
-=== Monitoring
+== Monitoring
 
 The lgresu project provides a server and web based monitoring interface to visualize the main LG Resu 10 LV BMS metrics such as:
 
@@ -18,16 +18,16 @@ The lgresu project provides a server and web based monitoring interface to visua
 
 image::doc/lg_resu_dashboard_phone.png[Screenshot,375,660]
 
-=== Operation
+== Operation
 
 The lgresu server also supplies the LG REsu 10 LV battery with a 'keep-alive' CANBus message which enables the use of a 
 48VDC inverter without a CANBus connection to the LG Resu 10 LV.
 
-=== Hardware Requirements
+== Hardware Requirements
 
 lgresu software requires a Raspberry PI equipped with a CANBus module connected to a LG Resu 10 battery.
 
-=== Documentation
+== Documentation
 
 lg_resu_mon server: https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc +
 lg_resu_dashboard web application: https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc +
