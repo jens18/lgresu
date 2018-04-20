@@ -17,7 +17,7 @@ image::doc/lg_resu_dashboard_phone.png[Screenshot,375,660]
 The lgresu server also supplies the LG REsu 10 LV battery with a 'keep-alive' CANBus message which enables the use of a 
 48VDC inverter without a CANBus connection to the LG Resu 10 LV:
 
-image::https://jenska.gitlab.io/jknotes/der_mgmt_system.svg[]
+image::https://jenska.gitlab.io/jknotes/der_mgmt_system.svg[HybridInverter,400,500]
 
 === Hardware Requirements
 
