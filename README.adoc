@@ -1,6 +1,6 @@
 == LG Resu 10 LV Monitor image:https://travis-ci.org/jens18/lgresu.svg?branch=master["Build Status", link="https://travis-ci.org/jens18/lgresu"] image:https://godoc.org/github.com/jens18/lgresu/lgresustatus?status.svg["GoDoc", link="https://godoc.org/github.com/jens18/lgresu/lgresustatus"]
 
-%toc%
+:toc:
 
 === Introduction
 
