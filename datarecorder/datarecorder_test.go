@@ -27,12 +27,6 @@ var (
 	recordTime  time.Time
 )
 
-func checkError(err error) {
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-}
-
 func countLines(fileName string) int {
 	file, _ := os.Open(fileName)
 	fileScanner := bufio.NewScanner(file)
@@ -62,7 +56,7 @@ func init() {
 	//log.SetLevel(log.DebugLevel)
 	// get current working directory
 	workingDir, err := os.Getwd()
-	checkError(err)
+	check(err)
 
 	rootDir = filepath.Join(workingDir, "data")
 
@@ -95,7 +89,7 @@ func TestDatarecorderWriteToDatafileSingleRecord(t *testing.T) {
 
 	// cleanup: remove single datafile
 	err := os.Remove(absFileName)
-	checkError(err)
+	check(err)
 }
 
 // TestDatarecorderWriteToDatafileSingleRecord writes multiple records.
@@ -118,7 +112,7 @@ func TestDatarecorderWriteToDatafileMultipleRecord(t *testing.T) {
 
 	// cleanup: remove single datafile
 	err := os.Remove(absFileName)
-	checkError(err)
+	check(err)
 }
 
 // TestDatarecorderWriteToDatafileForRangeOfDays creates a range of datafiles
@@ -150,6 +144,6 @@ func TestDatarecorderWriteToDatafileForRangeOfDays(t *testing.T) {
 
 	// cleanup: remove entire directory hierarchy
 	err = os.RemoveAll(rootDir)
-	checkError(err)
+	check(err)
 
 }

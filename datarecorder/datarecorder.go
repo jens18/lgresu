@@ -60,12 +60,15 @@ import (
 	"time"
 )
 
-// Datafile contains configuration data for datafile management.
+// Datafile contains configuration data for datafile management (RootPath, Extension, RetentionPeriod)
+// and state information (FileName, FileDesc).
 type Datarecorder struct {
 	RootPath        string
 	Extension       string
 	RetentionPeriod int
 	Header          string
+	FileName        string
+	FileDesc        *os.File
 }
 
 func check(e error) {
@@ -137,47 +140,61 @@ func deleteExpiredFiles(currentTime time.Time, rootDir string, retentionPeriod i
 
 // NewDatarecorder is the constructor for Datarecorder.
 func NewDatarecorder(rootPath string, extension string, retentionPeriod int, header string) *Datarecorder {
-	dr := &Datarecorder{rootPath, extension, retentionPeriod, header}
+	dr := &Datarecorder{rootPath, extension, retentionPeriod, header, "", nil}
 	return dr
 }
 
 // WriteToDatarecorder writes a new record to a CSV datafile.
 func (dr *Datarecorder) WriteToDatafile(currentTime time.Time, record string) {
+
+	var err error
+
 	// extract year, month, day strings from date
 	year := strconv.Itoa(currentTime.Year())
 	month := fmt.Sprintf("%02d", currentTime.Month()) // padding with 0's
 	day := fmt.Sprintf("%02d", currentTime.Day())     // padding with 0's
 
-	// platform independent path name concatenation
-	folderPath := filepath.Join(dr.RootPath, year, month)
-
+	// construct filename
 	fileName := year + month + day + dr.Extension
 
-	// create new directory if it does not already exist
-	os.MkdirAll(folderPath, 0755)
+	// test if file already exists
+	if fileName != dr.FileName {
+		// platform independent path name concatenation
+		folderPath := filepath.Join(dr.RootPath, year, month)
 
-	filePath := filepath.Join(folderPath, fileName)
+		// create new directory if it does not already exist
+		os.MkdirAll(folderPath, 0755)
 
-	fileExists := exists(filePath)
+		// construct absolute file path
+		filePath := filepath.Join(folderPath, fileName)
+		log.Debugf("write to new datafile at: %s \n", filePath)
 
-	log.Debugf("write to datafile at: %s \n", filePath)
+		// check if file has previously been created
+		fileExists := exists(filePath)
 
-	// create new file or append to existing file
-	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		// update Datarecorder struct
+		dr.FileName = fileName
 
-	check(err)
-	defer f.Close()
+		// close previous file descriptor
+		if dr.FileDesc != nil {
+			dr.FileDesc.Close()
+		}
 
-	// write header if new file has been created
-	if !fileExists {
-		_, err = f.WriteString(dr.Header)
+		// create new file or append to existing file
+		dr.FileDesc, err = os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		check(err)
+
+		// write header information only if the file has been newly created
+		if !fileExists {
+			_, err = dr.FileDesc.WriteString(dr.Header)
+			check(err)
+		}
 
 		// check if aged out files need to be deleted
 		_, err = deleteExpiredFiles(currentTime, dr.RootPath, dr.RetentionPeriod)
 		check(err)
 	}
 
-	_, err = f.WriteString(record)
+	_, err = dr.FileDesc.WriteString(record)
 	check(err)
 }
