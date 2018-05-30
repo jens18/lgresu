@@ -1,16 +1,21 @@
 language: go
 
+dd:
+  secure: mL9BIMM7EF6rnYpeoKfV/BUz8se1gbZ4SLt+z+fk1rKfCdSf+6eHOdgl5scybajlm8kc1mAO7psh4lUy42GvkSQudsScGhb96+qnAdyCwBPC/Ork6sOEm7mlyDU8Un3lnlBoRo41vCzQ+TJ3GZca0wmSXtd799s3llxNijSYuYP3erVhNn4ndORSevuq+HHlFDsP3Ung9cIqWwP1s0qtaCauuRjYNX5PNXtTFrQz4BNr2m0+OEq1vRDSm5KzBPPlASI/04yaPOyy1gsjEDOdSM8qhRbbJ94DUhJwNfD6JYoQcTCxTyFJJtGVfYz/Lk/HIVbRMdHQ659I+z34tIERF9W6P+mxFjwQnlkwxhzyG6fPFVPNnM4r7KwjM478Tu/SOeueLrBfaRy2bKX3VjjJvnymfDIlzs9kLiT+g1R3pbfyCctMoKm6Rzv5q6LygluqRZmwQirFFqmFWf3qaI08bf0c0jWN4KJkZ37qlp741La4iOAyVndbFpgLJ5LHUzbuIEzI+AQnExrDH8erulNPoUc+XDwkZL1Yxj/dJTKhEG4Q2CKFA96W8my62kFTpGHCgPEhAQCRN/gTwMOIziH+AtDMrHAtjw5gtYJiks5Zr9RKkif7joNog2GJDzWHO2bXZ8h4sN++TxIeXdFDxJq53K6+YInsshuIx1Bp5jNwmEw=
+
 go:
-  -  "1.10.x"
-  
+- 1.10.x
+
 before_install:
-   - go get github.com/sirupsen/logrus
-   - go get github.com/brutella/can
-   - go get github.com/google/go-cmp/cmp
-   - go get github.com/gorilla/mux
+- go get github.com/sirupsen/logrus
+- go get github.com/brutella/can
+- go get github.com/google/go-cmp/cmp
+- go get github.com/gorilla/mux
+- go get golang.org/x/tools/cmd/cover
+- go get github.com/mattn/goveralls
 
 script:
-   - go test -v ./...
-   - make install
-   
-   
+- go test -v -covermode=count -coverprofile=coverage.out
+- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+ $COVERALLS_TOKEN"
+- make install
