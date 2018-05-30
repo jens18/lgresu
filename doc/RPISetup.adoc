@@ -244,6 +244,41 @@ Reference:
 
 https://linuxcommando.blogspot.com/2013/10/how-to-connect-to-wpawpa2-wifi-network.html
 
+=== Node-RED:
+
+node-RED is a graphical event wiring tool (rapid prototyping environment) from IBM: http://nodered.org
+
+The Node-RED version that comes pre-installed with the Raspbian desktop version is outdated and needs
+to be updated with the following command (the Raspbian server version does not come with Node-RED pre-installed):
+
+----
+bash <(curl -sL https://raw.githubusercontent.com/node-red/raspbian-deb-package/master/resources/update-nodejs-and-nodered)
+----
+
+Additional Raspberry PI specific instructions:
+
+https://nodered.org/docs/hardware/raspberrypi
+
+==== node-red-contrib-modbus installation
+
+Instructions from the Youbube video: Raspberry PI Node-RED Tutorial with Modbus & MQTT
+
+https://www.youtube.com/watch?v=fV78MQks6BI
+
+----
+$ cd .node-red
+ls
+flows_salinas_cred.json  flows_salinas.json  lib  node_modules  package.json  package-lock.json  settings.js
+$ npm install node-red-contrib-modbus
+npm WARN node-red-project@0.0.1 No repository field.
+npm WARN node-red-project@0.0.1 No license field.
+
++ node-red-contrib-modbus@3.4.0
+updated 1 package in 237.55s
+$ node-red-stop
+$ node-red-start
+----
+
 === CANBus test environment:
 
 Setup the virtual CANBus interface:
