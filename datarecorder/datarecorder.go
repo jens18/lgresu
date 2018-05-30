@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package datafile contains functions to write metrics to a datafile.
+// Package datafile contains functions to write metrics to a datafile and
+// to manage the collection of datafiles.
 //
 // Datafiles can be of any format (JSON, CSV, ...). Filenames and directory
 // name reflect the date when the file was created and have the format:
@@ -60,7 +61,7 @@ import (
 	"time"
 )
 
-// Datafile contains configuration data for datafile management (RootPath, Extension, RetentionPeriod)
+// Datafile contains configuration parameters for datafile management (RootPath, Extension, RetentionPeriod)
 // and state information (FileName, FileDesc).
 type Datarecorder struct {
 	RootPath        string
@@ -138,13 +139,18 @@ func deleteExpiredFiles(currentTime time.Time, rootDir string, retentionPeriod i
 	return fileList, nil
 }
 
-// NewDatarecorder is the constructor for Datarecorder.
+// NewDatarecorder is the constructor for Datarecorder. rootPath is the absolute path intended as the
+// starting point of the datarecorder maintained directory hierarchy, extension is the individual datafile
+// extension (example: .csv, .json, etc.), retentionPeriod is the time in day until an individual datafile
+// is expired, header is a string containing a description of the datafile file columns.
 func NewDatarecorder(rootPath string, extension string, retentionPeriod int, header string) *Datarecorder {
 	dr := &Datarecorder{rootPath, extension, retentionPeriod, header, "", nil}
 	return dr
 }
 
-// WriteToDatarecorder writes a new record to a CSV datafile.
+// WriteToDatarecorder writes a new record to a CSV datafile. currentTime represents the time
+// of the metric measurement contained in record. record is a string containing the metric measurement
+// (in the case of a CSV record a single line with comma separated values).
 func (dr *Datarecorder) WriteToDatafile(currentTime time.Time, record string) {
 
 	var err error
