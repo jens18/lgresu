@@ -1,7 +1,7 @@
 language: go
 
 dd:
-  secure: mL9BIMM7EF6rnYpeoKfV/BUz8se1gbZ4SLt+z+fk1rKfCdSf+6eHOdgl5scybajlm8kc1mAO7psh4lUy42GvkSQudsScGhb96+qnAdyCwBPC/Ork6sOEm7mlyDU8Un3lnlBoRo41vCzQ+TJ3GZca0wmSXtd799s3llxNijSYuYP3erVhNn4ndORSevuq+HHlFDsP3Ung9cIqWwP1s0qtaCauuRjYNX5PNXtTFrQz4BNr2m0+OEq1vRDSm5KzBPPlASI/04yaPOyy1gsjEDOdSM8qhRbbJ94DUhJwNfD6JYoQcTCxTyFJJtGVfYz/Lk/HIVbRMdHQ659I+z34tIERF9W6P+mxFjwQnlkwxhzyG6fPFVPNnM4r7KwjM478Tu/SOeueLrBfaRy2bKX3VjjJvnymfDIlzs9kLiT+g1R3pbfyCctMoKm6Rzv5q6LygluqRZmwQirFFqmFWf3qaI08bf0c0jWN4KJkZ37qlp741La4iOAyVndbFpgLJ5LHUzbuIEzI+AQnExrDH8erulNPoUc+XDwkZL1Yxj/dJTKhEG4Q2CKFA96W8my62kFTpGHCgPEhAQCRN/gTwMOIziH+AtDMrHAtjw5gtYJiks5Zr9RKkif7joNog2GJDzWHO2bXZ8h4sN++TxIeXdFDxJq53K6+YInsshuIx1Bp5jNwmEw=
+  secure: Ok3RNguO3Ar1ItaLMS5XwOfPFwUcgdpyUwQAejvf/4NFCEm9xTsaMxS7xQaKJ5LZ+leS9ulgFbITqY+r2kdPhjWI/SUsP15KtDWnaIqrVjahuTYkGmK2N72VvmNXX3nGj6PUBjTb7/IMJWraPI/iKF2t39NfQCiBLTP9V66wiReB6P2R8NlP9BuXzwtOktwkaZc/yKy01xXlz+ZbpoLfYpg0+RH94aN9g4E7467D01KLgwSsiP3FsPcKEYmlG9AuxzRNeKdTGZiVJqj96VFdBYgLiLFQnlEF/avBeyPP/Nz8vJFJRJQuX0yW7gyKA2pUCqfPVogRbwp3WexJHOlTOCC65fxl/N7x9w94muTFEjjZ9ALz+xPToVSiNkw/zYTdqTAJP04AKGDsvmGZMqPPuK8wLqUzVMkQmfYmLLYBlzNHhLsinZBFYtqnL95NJ/SLGvVfIJuJ3HzMM2LGvt+0LWgVFNymx3atap3kPhjEUVs/9+FBNcu1gRAjttQg6evYJmSMw3Iijr6riJgVPTMjTJWGVUchCLmO9hVefxfvAysbUxyajaKCYBtYq+jBDkAnGQ4ztq5aL1W0b3CXSs2YlVRMoKEmznzCWJXIMR3IFbtaeHEoeky/mqzkCF3vX2JfLHQ+VL9OQokdnC1Ammds3SwuXLku9+PIzl9rXzhxziI=
 
 go:
 - 1.10.x
@@ -16,6 +16,6 @@ before_install:
 
 script:
 - go test -v -covermode=count -coverprofile=coverage.out ./...
-- "$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
- $COVERALLS_TOKEN"
+- $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken
+  $COVERALLS_TOKEN
 - make install
