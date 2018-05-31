@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package datafile contains functions to write metrics to a datafile and
+// Package datarecorder contains functions to write metrics to a datafile and
 // to manage the collection of datafiles.
 //
 // Datafiles can be of any format (JSON, CSV, ...). Filenames and directory
@@ -61,7 +61,10 @@ import (
 	"time"
 )
 
-// Datafile contains configuration parameters for datafile management (RootPath, Extension, RetentionPeriod)
+// Github triggers update of godoc documentation.
+type Github int
+
+// Datarecorder contains configuration parameters for datafile management (RootPath, Extension, RetentionPeriod)
 // and state information (FileName, FileDesc).
 type Datarecorder struct {
 	RootPath        string
@@ -95,7 +98,7 @@ func deleteExpiredFiles(currentTime time.Time, rootDir string, retentionPeriod i
 
 	// define datafile cutoff date
 
-	// substract retentionPeriod days from currentTime
+	// subtract retentionPeriod days from currentTime
 	cutoff := currentTime.AddDate(0, 0, -(retentionPeriod - 1))
 
 	log.Debugf("deleteExpiredFiles: cutoff = %v, currentTime = %v \n", cutoff, currentTime)
@@ -148,7 +151,7 @@ func NewDatarecorder(rootPath string, extension string, retentionPeriod int, hea
 	return dr
 }
 
-// WriteToDatarecorder writes a new record to a CSV datafile. currentTime represents the time
+// WriteToDatafile writes a new record to a CSV datafile. currentTime represents the time
 // of the metric measurement contained in record. record is a string containing the metric measurement
 // (in the case of a CSV record a single line with comma separated values).
 func (dr *Datarecorder) WriteToDatafile(currentTime time.Time, record string) {

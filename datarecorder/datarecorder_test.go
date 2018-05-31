@@ -64,7 +64,7 @@ func init() {
 
 	// convert layout timestamp to time object
 	layout := "20060102"
-	recordTime, err = time.Parse(layout, sampleFileBasename)
+	recordTime, _ = time.Parse(layout, sampleFileBasename)
 }
 
 // TestDatarecorderWriteToDatafileSingleRecord writes a single records.

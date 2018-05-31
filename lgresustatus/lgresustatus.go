@@ -50,16 +50,16 @@ const (
 	BMS_WARN_ALARM    uint32 = 0x359
 )
 
-// Publish documentation to godoc.
+// Github triggers update of godoc documentation.
 type Github int
 
-// A single warning/alarm bit mask and definition.
+// BitValue contains a single warning/alarm bit mask and definition.
 type BitValue struct {
 	Description string
 	Value       uint16
 }
 
-// Definition of 16 warning bits.
+// WarningBitValues defines 16 warning bits.
 //
 // Raw CANBus message format:
 //
@@ -104,7 +104,7 @@ var WarningBitValues = []BitValue{
 	{"UNKNOWN_WW7", 0x8000},
 }
 
-// Definition of 16 alarm bits is currently unknown.
+// AlarmBitValue defines 16 alarm bits (currently unknown).
 //
 // Raw CANBus message format:
 //
@@ -222,7 +222,7 @@ func (lgResu *LgResuStatus) DecodeLgResuCanbusMessage(id uint32, s []byte) {
 	}
 }
 
-// CreateKeepAlive creates one 'keep alive' message (to be send to the LG Resu 10 LV).
+// CreateKeepAliveMessage creates one 'keep alive' message (to be send to the LG Resu 10 LV).
 func (lgResu *LgResuStatus) CreateKeepAliveMessage() (id uint32, s []byte) {
 	id = INV_KEEP_ALIVE
 	s = []byte{0x00, 0x0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
