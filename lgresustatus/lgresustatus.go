@@ -104,7 +104,7 @@ var WarningBitValues = []BitValue{
 	{"UNKNOWN_WW7", 0x8000},
 }
 
-// AlarmBitValue defines 16 alarm bits (currently unknown).
+// AlarmBitValues defines 16 alarm bits (currently unknown).
 //
 // Raw CANBus message format:
 //
@@ -117,7 +117,7 @@ var AlarmBitValues = []BitValue{
 	{"UNKNOWN_ALARM", 0xffff},
 }
 
-// LGResuStatus contains metrics send by the LG Resu 10 LV.
+// LgResuStatus contains metrics send by the LG Resu 10 LV.
 type LgResuStatus struct {
 	// State Of Charge
 	Soc uint16 `json:"soc"`
