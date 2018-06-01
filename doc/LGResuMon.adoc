@@ -24,7 +24,7 @@ https://www.nxp.com/docs/en/data-sheet/TJA1050.pdf
 Ebay: http://r.ebay.com/DBujCT 
 
 NOTE: This module is intended to be used with an Arduino and has to be modified 
-according to these instructions to work correctly: https://www.raspberrypi.org/forums/viewtopic.php?t=141052
+according to these instructions to work with a Raspberry: https://www.raspberrypi.org/forums/viewtopic.php?t=141052
 
 DC-DC buck converter:
 
