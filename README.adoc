@@ -2,7 +2,7 @@
 
 == Introduction
 
-The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact, residential Lithium Ion battery made by LG Chem. The lgresu monitoring system can be adapted to work with other CANBus based Lithium Ion Battery Management Systems (BMS)(for example Discover AES batteries).
+The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact, residential Lithium Ion battery made by LG Chem. The lgresu monitoring system can be adapted to work with other CANBus based Lithium Ion Battery Management Systems (BMS)(for example http://discoveraes.com/[Discover AES] batteries).
 
 == Monitoring
 
