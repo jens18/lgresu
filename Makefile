@@ -4,7 +4,7 @@ ifeq ($(PREFIX),)
 endif
 
 ARCH := $(shell arch)
-VERSION := 1.1
+VERSION := 1.2
 
 all: install
 
