@@ -175,7 +175,7 @@ func main() {
 	logLevel := flag.String("d", "info", "log level: debug, info, warn, error")
 	port := flag.String("p", "9090", "port number")
 	dataDirRoot := flag.String("dr", "/opt/lgresu", "root directory for metric datafiles")
-	retentionPeriod := flag.Int("r", 7, "metric datafile retention period")
+	retentionPeriod := flag.Int("r", 7, "metric datafile retention period in days")
 
 	flag.Parse()
 

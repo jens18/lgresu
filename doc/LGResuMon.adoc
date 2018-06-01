@@ -21,9 +21,16 @@ CANBus module :
 http://ww1.microchip.com/downloads/en/DeviceDoc/21801e.pdf +
 https://www.nxp.com/docs/en/data-sheet/TJA1050.pdf
 
+Ebay: http://r.ebay.com/DBujCT 
+
+NOTE: This module is intended to be used with an Arduino and has to be modified 
+according to these instructions to work correctly: https://www.raspberrypi.org/forums/viewtopic.php?t=141052
+
 DC-DC buck converter:
 
 http://www.ti.com/lit/ds/symlink/lm2596.pdf +
+
+Ebay: http://r.ebay.com/OGuYa1
 
 Output voltage is set to 5VDC. Input voltage can be as high as 40VDC. 
 
@@ -244,8 +251,6 @@ lgresu
 │   └── lg_resu_mon
 ├── doc
 │   └── LgResuMon.pdf
-├── log
-│   ├── lg_resu_mon.log
 ├── script
 │   ├── can_stats.sh
 │   ├── keep_alive.sh
@@ -279,7 +284,7 @@ Verify that the `lg_resu_mon` process has been started:
 
 ==== Package installation
 
-The `lgresu` software package file name is: `lgresu-1.1-linux-armv7l.tar.gz`
+The `lgresu` software package file name is: `lgresu-1.2-linux-armv7l.tar.gz`
 
 NOTE: This package has been build on an `armv7l` system (Raspberry PI 3) but can also be used on an `armv6l` system (Raspberry PI 1).
 
@@ -294,40 +299,48 @@ Extract the `lgresu` software package with the commands:
 
 ----
 # cd /opt
-# tar xvfz /home/pi/lgresu-1.1-linux-armv7l.tar.gz
+# tar xvfz /home/pi/lgresu-1.2-linux-armv7l.tar.gz
 ----
 
-This will create a new directory: `/opt/lgresu-1.1`
+This will create a new directory: `/opt/lgresu-1.2`
 
-Move the existing `lgresu` directory:
-
-----
-# cd /opt
-# mv lgresu lgresu-1.0
-----
-
-Create a symbolic link to the `lgresu` software version you would like to use:
+Remove the existing `lgresu` symbolic link:
 
 ----
-# ln -s lgresu-1.1 lgresu
+# rm lgresu
+----
+
+Create a a new symbolic link to the `lgresu` software version you would like to use:
+
+----
+# ln -s lgresu-1.2 lgresu
 # ls -l
 total 12
-lrwxrwxrwx 1 root root   10 Apr 19 11:52 lgresu -> lgresu-1.1
-drwxr-xr-x 6 pi   pi   4096 Apr  3 18:45 lgresu-1.0
-drwxr-xr-x 6 pi   pi   4096 Apr 19 11:52 lgresu-1.1
+lrwxrwxrwx 1 root root   10 Apr 19 11:52 lgresu -> lgresu-1.2
+drwxr-xr-x 6 pi   pi   4096 Apr 19 11:52 lgresu-1.2
 ----
 
 ==== Server: Command line parameters
 
+The `lg_resu_mon` server support the following commandline parameters:
+
 ----
 # ./lg_resu_mon --help
                                  
-Usage of ./lg_resu_mon:
+Usage of ./lgresu_mon:
   -d string
     	log level: debug, info, warn, error (default "info")
+  -dr string
+    	root directory for metric datafiles (default "/opt/lgresu")
   -if string
     	network interface name (default "vcan0")
+  -p string
+    	port number (default "9090")
+  -r int
+    	metric datafile retention period in days (default 7)
 ----
+
+Changes to the default parameters can be persisted by updating the script `start_lg_resu_mon.sh`.
 
 ==== UI: node-RED flow import
 
@@ -427,6 +440,51 @@ $ more index.html
 Firefox:
 
 image::firefox_json_lgresu.png[]
+
+=== HTTP: CSV datafiles
+
+`lg_resu_mon` persists LG Resu metrics in CSV datafiles. Granularity of the CSV datafiles is 1 minute.
+
+Example CSV datafile: 20180531.csv
+
+----
+Time,Soc,Voltage,Current
+...
+2018/05/31 18:01:53,80,54.82,-1.10
+2018/05/31 18:02:53,80,54.83,-0.10
+2018/05/31 18:03:53,80,54.82,-0.50
+2018/05/31 18:04:53,80,54.82,-0.50
+...
+----
+
+For every day a new CSV datafile is created. The total number datafiles in the 'data' directory
+is limited by the retention period command line parameter (`-r`).
+
+CSV metric datafiles are organized in a hierarchy of directories starting with the year directory, followed 
+by the month directory which contains the most recent datafiles for the current month.
+
+Example directory hierarchy:
+
+----
+data
+└── 2018
+    └── 05
+        └── 20180525.csv
+        └── 20180526.csv
+        └── 20180527.csv
+        └── 20180528.csv
+        └── 20180529.csv
+        └── 20180530.csv
+        └── 20180531.csv
+----
+
+CSV datafile can be directly access with HTTP requests:
+
+http://<ip_address_lg_resu_mon_server>:9090/data/2018/05/0180531.csv
+
+A web browser can be used to interactively explore the directory hierarchy with the HTTP request:
+
+http://<ip_address_lg_resu_mon_server>:9090/data/
 
 === Log file
 
