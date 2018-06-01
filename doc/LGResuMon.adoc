@@ -478,7 +478,7 @@ data
         └── 20180531.csv
 ----
 
-CSV datafile can be directly access with HTTP requests:
+CSV datafiles can be directly access with HTTP requests:
 
 http://<ip_address_lg_resu_mon_server>:9090/data/2018/05/0180531.csv
 
