@@ -441,7 +441,7 @@ Firefox:
 
 image::firefox_json_lgresu.png[]
 
-=== HTTP: CSV datafiles
+=== CSV datafiles
 
 `lg_resu_mon` persists LG Resu metrics in CSV datafiles. Granularity of the CSV datafiles is 1 minute.
 
@@ -477,6 +477,8 @@ data
         └── 20180530.csv
         └── 20180531.csv
 ----
+
+=== HTTP: CSV datafiles
 
 CSV datafiles can be directly access with HTTP requests:
 
