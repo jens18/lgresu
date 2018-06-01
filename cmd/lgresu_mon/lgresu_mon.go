@@ -69,9 +69,12 @@ func decodeCanFrame(recordEmitChan chan<- rs.LgResuStatus) func(can.Frame) {
 }
 
 // writeRecord writes a new LgResuStatus record to a CSV datafile every minute.
-func writeRecord(writeSigChan chan<- bool, recordWriteChan <-chan rs.LgResuStatus, dataDirRoot string) {
+func writeRecord(writeSigChan chan<- bool,
+	recordWriteChan <-chan rs.LgResuStatus,
+	dataDirRoot string,
+	retentionPeriod int) {
 
-	dr := dr.NewDatarecorder(dataDirRoot, ".csv", 7, "Time,Soc,Voltage,Current\n")
+	dr := dr.NewDatarecorder(dataDirRoot, ".csv", retentionPeriod, "Time,Soc,Voltage,Current\n")
 
 	for {
 		select {
@@ -172,6 +175,7 @@ func main() {
 	logLevel := flag.String("d", "info", "log level: debug, info, warn, error")
 	port := flag.String("p", "9090", "port number")
 	dataDirRoot := flag.String("dr", "/opt/lgresu", "root directory for metric datafiles")
+	retentionPeriod := flag.Int("r", 7, "metric datafile retention period")
 
 	flag.Parse()
 
@@ -245,7 +249,7 @@ func main() {
 	go bus.ConnectAndPublish()
 
 	// write record to datafile
-	go writeRecord(writeSigChan, recordWriteChan, *dataDirRoot)
+	go writeRecord(writeSigChan, recordWriteChan, *dataDirRoot, *retentionPeriod)
 
 	router := mux.NewRouter().StrictSlash(true)
 
