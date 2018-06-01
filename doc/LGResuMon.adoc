@@ -21,9 +21,16 @@ CANBus module :
 http://ww1.microchip.com/downloads/en/DeviceDoc/21801e.pdf +
 https://www.nxp.com/docs/en/data-sheet/TJA1050.pdf
 
+Ebay: http://r.ebay.com/DBujCT 
+
+NOTE: This module is intended to be used with an Arduino and has to be modified 
+according to these instructions to work correctly: https://www.raspberrypi.org/forums/viewtopic.php?t=141052
+
 DC-DC buck converter:
 
 http://www.ti.com/lit/ds/symlink/lm2596.pdf +
+
+Ebay: http://r.ebay.com/OGuYa1
 
 Output voltage is set to 5VDC. Input voltage can be as high as 40VDC. 
 
