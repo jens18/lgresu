@@ -25,8 +25,7 @@ deploy:
   provider: releases
   api_key:
     secure: "Bw6uqasy6W8aFW/idrgvCjPt/HPD/VtTfyvaciOLYKLh7WGumhC6z+zN2knPkSFjrF3B/0WOjfoOcxTNBDTSxq8IUrhvQgrD2tgPx+9zXvy0Ch1DKhUpNPdiis7VM/O5fG9Uq7dylV5XrPmlwqFOkTl/xTk3fKH7lVDOSX07bTnHwdvFkpRBH8RwhWuYqmtJKmfK1CYGN1wc8FekjADGPI7YrZa3ccNyDyNLU4JH4qjLibIWvY7p5GJHMR8K9MhD585fUB6l0WK3ZMezf1GyTs7TehqvwUhIdt6BphA28UNTkHu82k4Jy/1zZlrImLhjxLT+AAInVW/Utjlze4IDSlBR2dAhm50G7tzec2BgNhxrMRV/BzpPMK7HLwE9ehXwZr2THEggRIBLyKQVkqfDdEDLezL77/cCzR7lpuY8L0l35XEOPCw8765QAhZDhbIQvivycJlEyV30fN/UaPtgoBDIHLLIbM4zF+ljzyHCoHSzKiS/Dr9vss03V5Ojbtq7MV1o6rcwcuuTk/PjNffAA5WgPmTm9hfe2qsov5IlgtMcagVoEDq5InFurUmMLtlyZO9wJAkhRho4Fnfny6y9lsKU/UJvPMZtGfvo732g9WGj1k7wuqHobR7hh2Dz3ZoIqlLbjj+BW3A4c0DLGp0ORFm6J99GoAvut8lbrGd3ou4="
-  file:
-    - dist/lgresu-${TRAVIS_TAG}-linux-x68_64.tar.gz
+  file: "dist/lgresu-${TRAVIS_TAG}-linux-x68_64.tar.gz"
   skip_cleanup: true
   on:
     tags: true
