@@ -40,4 +40,3 @@ install: doc/LGResuMon.pdf cmd/lgresu_mon/lgresu_mon
 	install -m 755 script/start_lg_resu_mon.sh $(PREFIX)/lgresu-$(VERSION)
 	tar -c -v -z -f dist/lgresu-$(VERSION)-linux-$(ARCH).tar.gz -C dist  lgresu-$(VERSION)
 
-
