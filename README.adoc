@@ -2,11 +2,11 @@
 
 == Introduction
 
-The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact, residential Lithium Ion battery made by LG Chem.
+The http://www.lgchem.com/global/ess/ess/product-detail-PDEC0001[LG Resu 10 LV] Energy Storage System is a very compact, residential Lithium Ion battery made by LG Chem. The lgresu monitoring system can be adapted to work with other CANBus based Lithium Ion Battery Management Systems (BMS)(for example http://discoveraes.com/[Discover AES] batteries).
 
 == Monitoring
 
-The lgresu project provides a server and web based monitoring interface to visualize the main LG Resu 10 LV BMS metrics such as:
+The lgresu project provides a server and web based monitoring system to visualize the main LG Resu 10 LV BMS metrics such as:
 
 * State Of Charge (SOC)
 * State Of Health (SOH)
@@ -35,8 +35,8 @@ lg_resu_dashboard web application: https://github.com/jens18/lgresu/blob/master/
 lgresustatus API: https://godoc.org/github.com/jens18/lgresu/lgresustatus +
 datarecorder API: https://godoc.org/github.com/jens18/lgresu/datarecorder +
 Raspberry PI configuration: https://github.com/jens18/lgresu/blob/master/doc/RPISetup.adoc +
-Solar/Grid Hybrid System notes: https://jenska.gitlab.io/jknotes/posts/hybrid_grid/
-
+Solar/Grid Hybrid System notes: https://jenska.gitlab.io/jknotes/posts/hybrid_grid/ +
+Discover AES CANBus specification: http://discoveraes.com/wp-content/uploads/2017/12/AEBus-Communication-Protocol-Specification.pdf
 
 
 
