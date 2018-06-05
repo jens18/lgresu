@@ -35,6 +35,10 @@ const (
 	keepAliveInterval time.Duration = 20
 )
 
+var (
+	version = "undefined"
+)
+
 // terminateMonitor receive operating system signal messages (SIGTERM, SIGKILL) via osSigChan and
 // issue a message via the termSigChan before disconnecting from the CANBus and terminating the server.
 func terminateMonitor(osSigChan <-chan os.Signal, termSigChan chan<- bool, bus *can.Bus) {
@@ -176,8 +180,14 @@ func main() {
 	port := flag.String("p", "9090", "port number")
 	dataDirRoot := flag.String("dr", "/opt/lgresu", "root directory for metric datafiles")
 	retentionPeriod := flag.Int("r", 7, "metric datafile retention period in days")
+	v := flag.Bool("v", false, "version number")
 
 	flag.Parse()
+
+	if *v == true {
+		fmt.Printf("version number: %s \n", version)
+		os.Exit(1)
+	}
 
 	if len(*i) == 0 {
 		flag.Usage()

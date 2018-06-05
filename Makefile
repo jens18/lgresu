@@ -4,12 +4,16 @@ ifeq ($(PREFIX),)
 endif
 
 ARCH := $(shell arch)
-VERSION := 1.2
+VERSION := $(shell git describe)
 
 all: install
 
+
+# embedding version number:
+# 1) https://www.reddit.com/r/golang/comments/4cpi2y/question_where_to_keep_the_version_number_of_a_go/
+# 2) https://gist.github.com/TheHippo/7e4d9ec4b7ed4c0d7a39839e6800cc16
 cmd/lgresu_mon/lgresu_mon: cmd/lgresu_mon/lgresu_mon.go
-	( go get ./...; cd $(dir $@); go build $(notdir $<) )
+	( go get ./...; cd $(dir $@); go build -ldflags="-X main.version=${VERSION}" $(notdir $<))
 
 doc: doc/LGResuMon.pdf doc/RPISetup.pdf
 
