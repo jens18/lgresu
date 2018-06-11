@@ -32,7 +32,11 @@ http://www.ti.com/lit/ds/symlink/lm2596.pdf +
 
 Ebay: http://r.ebay.com/OGuYa1
 
-Output voltage is set to 5VDC. Input voltage can be as high as 40VDC. 
+Output voltage is set to 5VDC. Input voltage can be as high as 40VDC.
+
+In order connect a DC-DC buck converter directly to the 48VDC LGResu 10 LV battery, the input voltage range has to be as high as 60VDC:
+
+Amazon: http://a.co/gFgr6Gd
 
 image::lg_resu_mon_hardware_1200x800.jpg[]
 
