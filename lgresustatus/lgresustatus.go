@@ -38,6 +38,8 @@ package lgresustatus
 import (
 	"encoding/binary"
 	log "github.com/sirupsen/logrus"
+	"strconv"
+	"time"
 )
 
 // Definition of the LG Resu 10 CANBus message id's
@@ -227,4 +229,18 @@ func (lgResu *LgResuStatus) CreateKeepAliveMessage() (id uint32, s []byte) {
 	id = INV_KEEP_ALIVE
 	s = []byte{0x00, 0x0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 	return id, s
+}
+
+// CsvRecord return a string containing the key metrics (Timestamp, SOC, Voltage, Current) as CSV values.
+func (lgResu *LgResuStatus) CsvRecord(t time.Time) (csvRecord string) {
+
+	return t.Format("2006/01/02 15:04:05") + "," +
+		strconv.Itoa(int(lgResu.Soc)) + "," +
+		strconv.FormatFloat(float64(lgResu.Voltage), 'f', 2, 32) + "," +
+		strconv.FormatFloat(float64(lgResu.Current), 'f', 2, 32) + "\n"
+}
+
+// CsvRecordHeader return a string containing the header for the CSV data record created with CsvRecord().
+func CsvRecordHeader() (csvRecordHeader string) {
+	return "Time,Soc,Voltage,Current\n"
 }

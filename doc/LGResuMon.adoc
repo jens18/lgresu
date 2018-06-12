@@ -10,13 +10,13 @@ v1.1, 04-19-2018
 
 === Hardware components
 
-The 3 main components of the system are:
+The 4 main components of the system are:
 
-Raspberry PI 1 model B:
+==== Raspberry PI 1 model B:
 
 https://en.wikipedia.org/wiki/Raspberry_Pi +
 
-CANBus module :
+==== CANBus module:
 
 http://ww1.microchip.com/downloads/en/DeviceDoc/21801e.pdf +
 https://www.nxp.com/docs/en/data-sheet/TJA1050.pdf
@@ -26,7 +26,7 @@ Ebay: http://r.ebay.com/DBujCT
 NOTE: This module is intended to be used with an Arduino and has to be modified 
 according to these instructions to work with a Raspberry: https://www.raspberrypi.org/forums/viewtopic.php?t=141052
 
-DC-DC buck converter:
+==== DC-DC buck converter:
 
 http://www.ti.com/lit/ds/symlink/lm2596.pdf +
 
@@ -37,6 +37,12 @@ Output voltage is set to 5VDC. Input voltage can be as high as 40VDC.
 In order connect a DC-DC buck converter directly to the 48VDC LGResu 10 LV battery, the input voltage range has to be as high as 60VDC:
 
 Amazon: http://a.co/gFgr6Gd
+
+==== RJ45 breakout board:
+
+Dual RJ45 Ethernet Connector Breakout Board with screw terminals:
+
+EBay: http://r.ebay.com/MkquWx
 
 image::lg_resu_mon_hardware_1200x800.jpg[]
 

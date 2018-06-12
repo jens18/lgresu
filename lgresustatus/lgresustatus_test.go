@@ -15,10 +15,13 @@
 package lgresustatus
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"github.com/google/go-cmp/cmp"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"testing"
+	"time"
 )
 
 // LG Resu 10 LV CANBus test messages
@@ -72,6 +75,10 @@ var CanbusTestMessages = []struct {
 
 var JsonExpectMessage string = `{"soc":77,"soh":99,"voltage":54.51,"current":-1.9,"temp":18.6,"maxVoltage":57.7,"maxChargeCurrent":91.8,"maxDischargeCurrent":91.8,"warnings":["WRN_ONLY_SUB_RELAY_COMMAND","BATTERY_HIGH_VOLTAGE","BATTERY_LOW_VOLTAGE","BATTERY_HIGH_TEMP","BATTERY_LOW_TEMP","UNKNOWN_ww5","UNKNOWN_ww6","BATTERY_HIGH_CURRENT_DISCHARGE","BATTERY_HIGH_CURRENT_CHARGE","UNKNOWN_WW1","UNKNOWN_WW2","BMS_INTERNAL","CELL_IMBALANCE","ALARM_SUB_PACK2_ERROR","ALARM_SUB_PACK1_ERROR","UNKNOWN_WW7"],"alarms":["UNKNOWN_ALARM"]}`
 
+var CsvRecordExpect string = "2018/06/11 00:00:00,77,54.51,-1.90\n"
+
+var CsvRecordHeaderExpect string = "Time,Soc,Voltage,Current\n"
+
 func init() {
 	// only log warning severity or above.
 	log.SetLevel(log.WarnLevel)
@@ -117,5 +124,38 @@ func TestCreateKeepAliveMessage(t *testing.T) {
 	if (id != INV_KEEP_ALIVE) || (len(data) != 8) {
 		t.Errorf("CreateKeepAliveMessage() returned id = %#04x, len(data) = %d, expect id = %#04x, len(data) = 8 \n",
 			id, len(data), INV_KEEP_ALIVE)
+	}
+}
+
+func TestCsvRecord(t *testing.T) {
+	lgResu := &LgResuStatus{}
+
+	// process all test messages
+	for _, tm := range CanbusTestMessages {
+		lgResu.DecodeLgResuCanbusMessage(tm.Identifier, tm.Data[:])
+	}
+
+	timestamp, _ := time.Parse("2006-Jan-02", "2018-Jun-11")
+
+	csvRecord := lgResu.CsvRecord(timestamp)
+	t.Log(csvRecord)
+
+	csvHeader := CsvRecordHeader()
+
+	if csvRecord != CsvRecordExpect {
+		t.Errorf("TestCsvRecord() returned CSV data record: %s, expect CSV data record: %s\n",
+			csvRecord, CsvRecordExpect)
+	}
+
+	// number of CSV values should match number of CSV header values (4)
+	reader := csv.NewReader(strings.NewReader(csvRecord))
+	record, _ := reader.Read()
+
+	reader = csv.NewReader(strings.NewReader(csvHeader))
+	header, _ := reader.Read()
+
+	if len(record) != len(header) {
+		t.Errorf("TestCsvRecord() returned CSV data record with %d values, expect CSV data record with %d values\n",
+			len(record), len(header))
 	}
 }

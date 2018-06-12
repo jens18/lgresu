@@ -27,10 +27,12 @@ lgresu software requires a Raspberry PI equipped with a CANBus module connected 
 
 image::doc/lg_resu_mon_hardware_1200x800.jpg[]
 
-More details about the hardware can be found at link:https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc[LGResuMon.adoc]. 
+More details about the hardware can be found in link:https://github.com/jens18/lgresu/blob/master/doc/LGResuMon.adoc[LGResuMon.adoc]. 
 
 This solution can coexist with other products for integration of the LG Resu 10 battery with an inverter 
 (Schneider Conext Bridge, Victron ESS, SMA Sunny Island, ...).
+
+It is also possible to connect this hardware to a car CANBus with an ODB2 to RJ45 adapter cable.
 
 == Documentation
 
