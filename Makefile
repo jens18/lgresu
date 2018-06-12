@@ -26,7 +26,7 @@ clean:
 	-rm cmd/lgresu_mon/lgresu_mon
 	-rm -rf dist/*
 
-install: doc/LGResuMon.pdf cmd/lgresu_mon/lgresu_mon
+install: cmd/lgresu_mon/lgresu_mon
 	install -d $(PREFIX)/lgresu-$(VERSION)/bin/
 	install -d $(PREFIX)/lgresu-$(VERSION)/doc/
 	install -m 644 doc/LGResuMon.pdf $(PREFIX)/lgresu-$(VERSION)/doc
