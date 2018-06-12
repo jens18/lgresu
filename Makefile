@@ -12,8 +12,17 @@ all: install
 # embedding version number:
 # 1) https://www.reddit.com/r/golang/comments/4cpi2y/question_where_to_keep_the_version_number_of_a_go/
 # 2) https://gist.github.com/TheHippo/7e4d9ec4b7ed4c0d7a39839e6800cc16
-cmd/lgresu_mon/lgresu_mon: cmd/lgresu_mon/lgresu_mon.go cmd/lgresu_mon/lgresu_actors.go
-	( go get ./...; cd $(dir $@); go build -ldflags="-X main.version=${VERSION}")
+cmd/lgresu_mon/lgresu_mon: dep cmd/lgresu_mon/lgresu_mon.go cmd/lgresu_mon/lgresu_actors.go
+	( cd $(dir $@); go build -ldflags="-X main.version=${VERSION}" lgresu_mon.go lgresu_actors.go )
+
+.PHONY: dep
+dep:
+	go get github.com/sirupsen/logrus
+	go get github.com/brutella/can
+	go get github.com/google/go-cmp/cmp
+	go get github.com/gorilla/mux
+	go get golang.org/x/tools/cmd/cover
+	go get github.com/mattn/goveralls
 
 doc: doc/LGResuMon.pdf doc/RPISetup.pdf
 
