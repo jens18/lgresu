@@ -138,7 +138,7 @@ func TestCsvRecord(t *testing.T) {
 	timestamp, _ := time.Parse("2006-Jan-02", "2018-Jun-11")
 
 	csvRecord := lgResu.CsvRecord(timestamp)
-	t.Log(csvRecord)
+	log.Debugf("TestCsvRecord: csvRecord = %s \n", csvRecord)
 
 	csvHeader := CsvRecordHeader()
 

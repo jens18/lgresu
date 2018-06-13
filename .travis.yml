@@ -1,5 +1,6 @@
 language: go
 
+# request VM instead of container (default)
 sudo: required 
 dist: trusty
 
@@ -17,16 +18,17 @@ before_install:
   - go get github.com/gorilla/mux
   - go get golang.org/x/tools/cmd/cover
   - go get github.com/mattn/goveralls
+  # create virtual CANBus interface vcan0 
+  - sudo modprobe vcan
+  - sudo ip link add dev vcan0 type vcan
+  - sudo ip link set up vcan0
+  - ifconfig vcan0
 
 script:
   - go test -v -covermode=count -coverprofile=coverage.out -tags test ./... 
   # upload coverage.out report
   - $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
-  - sudo modprobe vcan
-  - sudo ip link add dev vcan0 type vcan
-  - sudo ip link set up vcan0
-  - ifconfig vcan0
-  - make install
+  - export GOARCH=arm; make install
 
 deploy:
   provider: releases
