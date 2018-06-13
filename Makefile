@@ -3,7 +3,7 @@ ifeq ($(PREFIX),)
     PREFIX := dist
 endif
 
-ARCH := $(shell arch)
+ARCH := $(shell go env GOARCH)
 VERSION := $(shell git describe)
 
 all: install
@@ -48,4 +48,6 @@ install: cmd/lgresu_mon/lgresu_mon
 	install -m 644 script/lg_resu_dashboard.json $(PREFIX)/lgresu-$(VERSION)/script
 	install -m 755 script/start_lg_resu_mon.sh $(PREFIX)/lgresu-$(VERSION)
 	tar -c -v -z -f dist/lgresu-$(VERSION)-linux-$(ARCH).tar.gz -C dist  lgresu-$(VERSION)
+
+
 

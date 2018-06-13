@@ -296,6 +296,12 @@ vcan0     Link encap:UNSPEC  HWaddr 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
           RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
 ----
 
+Delete the virtual CANBus interface:
+
+----
+# ip link delete vcan0
+----
+
 Install `can-utils` package (https://github.com/linux-can/can-utils.git):
 
 ----
