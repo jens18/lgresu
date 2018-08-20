@@ -4,10 +4,12 @@
 *.so
 *.dylib
 *~
+*.log
 cmd/lgresu_mon/lgresu_mon
 cmd/lgresu_sim/lgresu_sim
 cmd/lgresu_mon/data
-
+doc/RPISetup.pdf
+		
 dist/
 
 # Test binary, build with `go test -c`

@@ -412,7 +412,7 @@ tab on the right side of the node-RED screen.
 
 == Monitoring
 
-=== HTTP: Monititoring Dashboard UI
+=== HTTP: Monitoring Dashboard UI
 
 The LG Resu Monitoring dashboard can be accessed at:
 

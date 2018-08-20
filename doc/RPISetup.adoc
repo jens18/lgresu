@@ -55,7 +55,7 @@ Start `raspi-config`:
 ----
 
 4 Localization -> Timezone: Pacific New (PDT/PST) +
-5 Interfacing Options -> enable: SSH, SPI (required for CANBus module) +
+5 Interfacing Options -> enable: SSH, VNC (only for Raspbian desktop version), SPI (required for CANBus module) +
 6 Overclock -> Modest (800 Mhz ARM) +
 
 === Upgrade Raspbian
