@@ -23,8 +23,12 @@ https://www.nxp.com/docs/en/data-sheet/TJA1050.pdf
 
 Ebay: http://r.ebay.com/DBujCT 
 
-NOTE: This module is intended to be used with an Arduino and has to be modified 
-according to these instructions to work with a Raspberry: https://www.raspberrypi.org/forums/viewtopic.php?t=141052
+NOTE: This module is intended to be used with an Arduino (GPIO Voltage range: 0-5 VDC) and has to be modified 
+according to these instructions to work with a Raspberry (GPIO Voltage range: 0-3.3 VDC):
+
+https://www.raspberrypi.org/forums/viewtopic.php?t=141052
+
+The MCP2515 chip can be operated within a voltage range of 2.7-5.5 VDC.
 
 ==== DC-DC buck converter:
 

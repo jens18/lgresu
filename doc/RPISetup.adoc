@@ -43,6 +43,13 @@ boot without having to connect an HDMI monitor and USB keyboard in order to enab
 # touch ssh
 ----
 
+Boot Raspberry PI and login with SSH to enable VNC:
+
+----
+# raspi-config
+enable VNC: Interfaces -> VNC: enable
+----
+
 === Configure Raspbian
 
 l: pi +
@@ -55,7 +62,7 @@ Start `raspi-config`:
 ----
 
 4 Localization -> Timezone: Pacific New (PDT/PST) +
-5 Interfacing Options -> enable: SSH, VNC (only for Raspbian desktop version), SPI (required for CANBus module) +
+5 Interfacing Options -> enable: SPI (required for CANBus module) +
 6 Overclock -> Modest (800 Mhz ARM) +
 
 === Upgrade Raspbian
@@ -90,6 +97,10 @@ After reboot - test presence of SPI and MCP2515:
 [  729.404467] can: controller area network core (rev 20120528 abi 9)
 [  729.428158] can: raw protocol (rev 20120528)
 ----
+
+NOTE: `can0` link information will only appear if the interface has
+already been configured. Instructions on how to configure the `can0`
+interface can be found below.
 
 === Configure Powersaving options
 
@@ -277,6 +288,12 @@ npm WARN node-red-project@0.0.1 No license field.
 updated 1 package in 237.55s
 $ node-red-stop
 $ node-red-start
+----
+
+==== Enable automated startup
+
+----
+sudo systemctl enable nodered.service
 ----
 
 === CANBus test environment:
