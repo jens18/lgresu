@@ -23,6 +23,7 @@ dep:
 	go get github.com/gorilla/mux
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/mattn/goveralls
+	go get github.com/jens18/lgresu/datarecorder
 
 doc: doc/LGResuMon.pdf doc/RPISetup.pdf
 
